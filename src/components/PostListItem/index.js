@@ -42,17 +42,21 @@ class PostListItem extends PureComponent {
           key={index}
         >
           <div className={styles["post-list-item__mark"]}><Icon type={this.mapping.icon[item.post_type]} /></div>
-          <div
-            className={styles["post-list-item__banner"]}
-            style={{backgroundImage: `url(//${item.post_cover.media_url})`}}
-          />
+          <If condition={item.post_cover}>
+            <div
+              className={styles["post-list-item__banner"]}
+              style={{backgroundImage: `url(//${item.post_cover.media_url})`}}
+            />
+          </If>
           <div className={styles["post-list-item__content"]}>
             <div className={styles["post-list-item__title"]}>{item.post_title}</div>
             <If condition={item.post_type !== 2}>
-            <div className={styles["post-list-item__intro"]}>
-              {item.post_content}
-              <div className={styles["post-list-item__more"]}><Link to='/'>查看全文</Link></div>
-            </div>
+              <div className={styles["post-list-item__intro"]}>
+                {item.post_content}
+                <div className={styles["post-list-item__more"]}>
+                  <Link to={`/archives/${item._id}`}>查看全文</Link>
+                </div>
+              </div>
             </If>
             <div className={styles["post-list-item__info"]}>
               <li className={styles["post-list-item__info-item"]}><Icon type="user" />&nbsp;{item.post_author.user_name}</li>

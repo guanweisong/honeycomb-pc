@@ -23,5 +23,25 @@ export default {
   extraBabelPlugins: [
     "jsx-control-statements"
   ],
-  theme: './src/theme.js'
-}
+  theme: './src/theme.js',
+  routes: [
+    {
+      path: '/',
+      component: '../layouts',
+      routes: [
+        {
+          path: '/',
+          component: './category',
+        },
+        {
+          path: '/category/:firstCategory?/:secondCategory?',
+          component: './category',
+        },
+        {
+          path: '/archives/:id',
+          component: './archives',
+        },
+      ],
+    },
+  ],
+};

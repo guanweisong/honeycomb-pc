@@ -6,6 +6,11 @@ import styles from './index.less';
 
 @connect(({ app }) => ({ app }))
 class BasicLayout extends PureComponent {
+  componentDidUpdate(prevProps) {
+    if (this.props.location !== prevProps.location) {
+      window.scrollTo(0, 0);
+    }
+  }
   render() {
     return (
       <div>

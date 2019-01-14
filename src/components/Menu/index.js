@@ -16,7 +16,8 @@ class Menu extends PureComponent {
     const result = [
       {
         category_title: '首页',
-        category_title_en: 'home',
+        category_title_en: '',
+        isHome: true,
       }
     ];
     data.forEach((item) => {
@@ -36,8 +37,14 @@ class Menu extends PureComponent {
   };
   getActiveStatus = (category_title_en) => {
     let flag = false;
-    if (this.props.location.pathname.indexOf(category_title_en) !== -1) {
-      flag = true;
+    if (category_title_en === '') {
+      if (this.props.location.pathname === '/') {
+        flag = true;
+      }
+    } else {
+      if (this.props.location.pathname.indexOf(category_title_en) !== -1) {
+        flag = true;
+      }
     }
     return flag;
   };
@@ -55,7 +62,7 @@ class Menu extends PureComponent {
               key={firstLevel.category_title_en}
             >
               <div className={styles["menu-first__item-name"]}>
-                <Link to={`/${firstLevel.category_title_en}`}>{firstLevel.category_title}</Link>
+                <Link to={`${firstLevel.isHome === true ? '': '/category'}/${firstLevel.category_title_en}`}>{firstLevel.category_title}</Link>
               </div>
               <If condition={firstLevel.child.length > 0}>
                 <ul className={styles["menu-second"]}>
@@ -68,7 +75,7 @@ class Menu extends PureComponent {
                       key={secondLevel.category_title_en}
                     >
                       <div className={styles["menu-second__item-name"]}>
-                        <Link to={`/${firstLevel.category_title_en}/${secondLevel.category_title_en}`}>{secondLevel.category_title}</Link>
+                        <Link to={`/category/${firstLevel.category_title_en}/${secondLevel.category_title_en}`}>{secondLevel.category_title}</Link>
                       </div>
                     </li>
                   </For>
