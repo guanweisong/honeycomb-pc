@@ -38,30 +38,28 @@
   &__comment {
     margin-top: 50px;
     &-title {
-      position: relative;
       padding: 10px 30px;
+      margin-top: 50px;
       background: #fff;
-      border-bottom: 4px solid #ddd;
-      text-align: center;
+      border-bottom: 4px solid #eee;
       &-text {
-        position: absolute;
-        left: 30px;
-        font-size: 16px;
+        font-size: 18px;
       }
     }
     &-list {
-      margin-top: 20px;
+      padding: 20px 30px;
+      background: #fff;
     }
     &-item {
       position: relative;
       padding: 20px 0;
       border-bottom: 1px dashed #ddd;
+      overflow: hidden;
     }
     &-photo {
       float: left;
-
-      width: 80px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
       margin-right: 20px;
     }
     &-content {
@@ -73,9 +71,9 @@
       top: 20px;
       &-item {
         display: inline-block;
-        color: #eb005d;
-        &:first-child {
-          color: #999;
+        &--reply {
+          color: #eb005d;
+          cursor: pointer;
         }
         &:before{
           display: inline-block;
@@ -97,6 +95,23 @@
     &-text {
       margin-top: 10px;
       color: #999;
+    }
+    &-form {
+      background: #fff;
+      padding: 20px 30px;
+    }
+    &-reply {
+      margin-bottom: 10px;
+      &-label {
+        color: #eb005d;
+      }
+      &-name {
+        margin: 0 10px;
+      }
+      &-cancel {
+        cursor: pointer;
+        color: #999;
+      }
     }
   }
 }

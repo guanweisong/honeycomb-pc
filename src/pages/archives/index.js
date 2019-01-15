@@ -1,13 +1,19 @@
 import React, { PureComponent } from 'react';
-import { Spin, Empty, Icon } from 'antd';
+import { Spin, Empty, Icon, Form, Input, Button } from 'antd';
+import classNames from 'classnames';
 import { connect } from 'dva';
 import moment from 'moment';
+import md5 from 'md5';
 import { routerRedux } from 'dva/router';
 import styles from './index.less';
+
+const FormItem = Form.Item;
+const { TextArea } = Input;
 
 const mapStateToProps = (state) => state;
 
 @connect(mapStateToProps)
+@Form.create()
 class Archives extends PureComponent {
   constructor(props) {
     super(props);
@@ -23,7 +29,11 @@ class Archives extends PureComponent {
   getData = (id) => {
     this.props.dispatch({
       type: 'posts/indexPostDetail',
-      payload: {_id: id}
+      payload: {_id: id},
+    });
+    this.props.dispatch({
+      type: 'comments/index',
+      payload: id,
     });
   };
   getTags = (arr) => {
@@ -35,8 +45,35 @@ class Archives extends PureComponent {
     });
     return textArr.join('、');
   };
+  handleReply = (item) => {
+    if (item !== null) {
+      window.scrollTo(0 ,99999);
+    }
+    this.props.dispatch({
+      type: 'comments/setReplyTo',
+      payload: item,
+    });
+  };
+  handleSubmit = () => {
+    this.props.form.validateFields((errors) => {
+      if (errors) {
+        return;
+      }
+      let data = this.props.form.getFieldsValue();
+      data = { ...data, comment_post: this.props.posts.detail._id};
+      if (this.props.comments.replyTo !== null) {
+        data = { ...data, comment_parent: this.props.comments.replyTo._id};
+      }
+      console.log('handleSubmit', data);
+      this.props.dispatch({
+        type: 'comments/create',
+        payload: data,
+      });
+    });
+  };
   render() {
     const { detail } = this.props.posts;
+    const { getFieldDecorator } = this.props.form;
     return (
       <Spin spinning={this.props.posts.loading}>
         <div className="container">
@@ -64,23 +101,98 @@ class Archives extends PureComponent {
                 </If>
               </div>
               <div className={styles["detail__comment"]}>
+                <If condition={this.props.comments.total !== 0}>
+                  <div className={styles["detail__comment-title"]}>
+                    <span className={styles["detail__comment-title-text"]}>{this.props.comments.total} Comments</span>
+                  </div>
+                  <ul className={styles["detail__comment-list"]}>
+                    <For each="item" of={this.props.comments.list}>
+                      <li className={styles["detail__comment-item"]} key={item._id}>
+                        <div className={styles["detail__comment-photo"]}>
+                          <img src={`//www.gravatar.com/avatar/${md5(item.comment_email.trim().toLowerCase())}?s=60&d=identicon`}/>
+                        </div>
+                        <div className={styles["detail__comment-content"]}>
+                          <div className={styles["detail__comment-name"]}>{item.comment_author}</div>
+                          <div className={styles["detail__comment-text"]}>
+                            <Choose>
+                              <When condition={item.comment_status !== 3}>
+                                {item.comment_content}
+                              </When>
+                              <Otherwise>
+                                该条评论已屏蔽
+                              </Otherwise>
+                            </Choose>
+                          </div>
+                        </div>
+                        <ul className={styles["detail__comment-info"]}>
+                          <li className={styles["detail__comment-info-item"]}>{moment(item.created_at).format('YYYY-MM-DD')}</li>
+                          <li
+                            className={classNames({
+                              [styles["detail__comment-info-item"]]: true,
+                              [styles["detail__comment-info-item--reply"]]: true,
+                            })}
+                            onClick={() => this.handleReply(item)}
+                          >
+                            Reply
+                          </li>
+                        </ul>
+                      </li>
+                    </For>
+                  </ul>
+                </If>
                 <div className={styles["detail__comment-title"]}>
-                  <span className={styles["detail__comment-title-text"]}>32 Comments</span>
-                  <span className={styles["detail__comment-title-button"]}><Icon type="edit" />&nbsp;Leave a comment now</span>
+                  <span className={styles["detail__comment-title-text"]}>Leave A Comment</span>
                 </div>
-                <ul className={styles["detail__comment-list"]}>
-                  <li className={styles["detail__comment-item"]}>
-                    <div className={styles["detail__comment-photo"]}></div>
-                    <div className={styles["detail__comment-content"]}>
-                      <div className={styles["detail__comment-name"]}>John Doe</div>
-                      <div className={styles["detail__comment-text"]}>Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, Good, </div>
+                <div className={styles["detail__comment-form"]}>
+                  <If condition={this.props.comments.replyTo !== null}>
+                    <div className={styles["detail__comment-reply"]}>
+                      <span className={styles["detail__comment-reply-label"]}>Reply to:</span>
+                      <span className={styles["detail__comment-reply-name"]}>{this.props.comments.replyTo.comment_author}</span>
+                      <span
+                        className={styles["detail__comment-reply-cancel"]}
+                        onClick={() => this.handleReply(null)}
+                      >
+                        [取消]
+                      </span>
                     </div>
-                    <ul className={styles["detail__comment-info"]}>
-                      <li className={styles["detail__comment-info-item"]}>2018-10-10</li>
-                      <li className={styles["detail__comment-info-item"]}>Reply</li>
-                    </ul>
-                  </li>
-                </ul>
+                  </If>
+                  <Form>
+                    <FormItem>
+                      {getFieldDecorator('comment_author', {
+                        rules: [
+                          { required: true, message: '请输入称呼' },
+                          { max: 20, message: '字数不能大于20' }
+                        ],
+                      })(
+                        <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="称呼" />
+                      )}
+                    </FormItem>
+                    <FormItem>
+                      {getFieldDecorator('comment_email', {
+                        rules: [
+                          { required: true, message: '请输入邮箱' },
+                          { max: 30, message: '字数不能大于30' },
+                          { type: 'email', message: '邮箱格式不正确'}
+                        ],
+                      })(
+                        <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="邮箱" />
+                      )}
+                    </FormItem>
+                    <FormItem>
+                      {getFieldDecorator('comment_content', {
+                        rules: [
+                          { required: true, message: '请输入内容' },
+                          { max: 200, message: '字数不能大于200' },
+                        ],
+                      })(
+                        <TextArea rows={4} placeholder="我坚信，评论可以一针见血"/>
+                      )}
+                    </FormItem>
+                    <FormItem>
+                      <Button type="primary" onClick={this.handleSubmit}>提交</Button>
+                    </FormItem>
+                  </Form>
+                </div>
               </div>
             </When>
             <Otherwise>
