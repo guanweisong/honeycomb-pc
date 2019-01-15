@@ -31,11 +31,16 @@ export default {
         payload: false,
       });
     },
-    * create({ payload: values }, { call, put }) {
+    * create({ payload: values }, { select, call, put }) {
       console.log('comment=>model=>create', values);
       const result = yield call(commentsService.create, values);
       if (result.status === 201) {
-        message.success('发布成功，请等待审核');
+        message.success('发布成功');
+        const id = yield select(state => state.posts.detail._id);
+        yield put({
+          type: 'index',
+          payload: id,
+        });
       }
     },
   },

@@ -69,8 +69,53 @@ class Archives extends PureComponent {
         type: 'comments/create',
         payload: data,
       });
+      this.props.form.resetFields();
+      this.handleReply(null);
     });
   };
+  renderCommentList = (data) => {
+    return data.map(item => {
+      return (
+        <li className={styles["detail__comment-item"]} key={item._id}>
+          <div className={styles["detail__comment-wrap"]}>
+            <div className={styles["detail__comment-photo"]}>
+              <img src={`//www.gravatar.com/avatar/${md5(item.comment_email.trim().toLowerCase())}?s=48&d=identicon`}/>
+            </div>
+            <div className={styles["detail__comment-content"]}>
+              <div className={styles["detail__comment-name"]}>{item.comment_author}</div>
+              <div className={styles["detail__comment-text"]}>
+                <Choose>
+                  <When condition={item.comment_status !== 3}>
+                    {item.comment_content}
+                  </When>
+                  <Otherwise>
+                    该条评论已屏蔽
+                  </Otherwise>
+                </Choose>
+              </div>
+            </div>
+            <ul className={styles["detail__comment-info"]}>
+              <li className={styles["detail__comment-info-item"]}>{moment(item.created_at).format('YYYY-MM-DD')}</li>
+              <li
+                className={classNames({
+                  [styles["detail__comment-info-item"]]: true,
+                  [styles["detail__comment-info-item--reply"]]: true,
+                })}
+                onClick={() => this.handleReply(item)}
+              >
+                Reply
+              </li>
+            </ul>
+          </div>
+          <If condition={item.children.length > 0}>
+            <ul className={styles["detail__comment-list"]}>
+              {this.renderCommentList(item.children)}
+            </ul>
+          </If>
+        </li>
+      )
+    })
+  }
   render() {
     const { detail } = this.props.posts;
     const { getFieldDecorator } = this.props.form;
@@ -105,40 +150,11 @@ class Archives extends PureComponent {
                   <div className={styles["detail__comment-title"]}>
                     <span className={styles["detail__comment-title-text"]}>{this.props.comments.total} Comments</span>
                   </div>
-                  <ul className={styles["detail__comment-list"]}>
-                    <For each="item" of={this.props.comments.list}>
-                      <li className={styles["detail__comment-item"]} key={item._id}>
-                        <div className={styles["detail__comment-photo"]}>
-                          <img src={`//www.gravatar.com/avatar/${md5(item.comment_email.trim().toLowerCase())}?s=60&d=identicon`}/>
-                        </div>
-                        <div className={styles["detail__comment-content"]}>
-                          <div className={styles["detail__comment-name"]}>{item.comment_author}</div>
-                          <div className={styles["detail__comment-text"]}>
-                            <Choose>
-                              <When condition={item.comment_status !== 3}>
-                                {item.comment_content}
-                              </When>
-                              <Otherwise>
-                                该条评论已屏蔽
-                              </Otherwise>
-                            </Choose>
-                          </div>
-                        </div>
-                        <ul className={styles["detail__comment-info"]}>
-                          <li className={styles["detail__comment-info-item"]}>{moment(item.created_at).format('YYYY-MM-DD')}</li>
-                          <li
-                            className={classNames({
-                              [styles["detail__comment-info-item"]]: true,
-                              [styles["detail__comment-info-item--reply"]]: true,
-                            })}
-                            onClick={() => this.handleReply(item)}
-                          >
-                            Reply
-                          </li>
-                        </ul>
-                      </li>
-                    </For>
-                  </ul>
+                  <div className={styles["detail__comment-content"]}>
+                    <ul className={styles["detail__comment-list"]}>
+                      {this.renderCommentList(this.props.comments.list)}
+                    </ul>
+                  </div>
                 </If>
                 <div className={styles["detail__comment-title"]}>
                   <span className={styles["detail__comment-title-text"]}>Leave A Comment</span>
