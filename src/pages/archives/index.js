@@ -3,7 +3,6 @@ import { Spin, Empty, Icon, Form, Input, Button } from 'antd';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import moment from 'moment';
-import md5 from 'md5';
 import { routerRedux } from 'dva/router';
 import styles from './index.less';
 
@@ -79,7 +78,7 @@ class Archives extends PureComponent {
         <li className={styles["detail__comment-item"]} key={item._id}>
           <div className={styles["detail__comment-wrap"]}>
             <div className={styles["detail__comment-photo"]}>
-              <img src={`//www.gravatar.com/avatar/${md5(item.comment_email.trim().toLowerCase())}?s=48&d=identicon`}/>
+              <img src={item.comment_avatar}/>
             </div>
             <div className={styles["detail__comment-content"]}>
               <div className={styles["detail__comment-name"]}>{item.comment_author}</div>
@@ -129,7 +128,7 @@ class Archives extends PureComponent {
                 <ul className={styles["detail__info"]}>
                   <li className={styles["detail__info-item"]}><Icon type="user" />&nbsp;{detail.post_author.user_name}</li>
                   <li className={styles["detail__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(detail.created_at).format('YYYY-MM-DD')}</li>
-                  <li className={styles["detail__info-item"]}><Icon type="message" />&nbsp;10 Comments</li>
+                  <li className={styles["detail__info-item"]}><Icon type="message" />&nbsp;{this.props.comments.total} Comments</li>
                   <li className={styles["detail__info-item"]}><Icon type="eye" />&nbsp;{detail.post_views}&nbsp;Views</li>
                 </ul>
                 <div

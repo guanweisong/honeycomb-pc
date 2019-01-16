@@ -51,9 +51,7 @@ class PostListItem extends PureComponent {
           <div className={styles["post-list-item__content"]}>
             <div className={styles["post-list-item__title"]}>{item.post_title}</div>
             <div className={styles["post-list-item__intro"]}>
-              <If condition={item.post_type !== 2}>
-                {item.post_content}
-              </If>
+              {item.post_excerpt}
               <div className={styles["post-list-item__more"]}>
                 <Link to={`/archives/${item._id}`}>查看全文</Link>
               </div>
@@ -73,7 +71,7 @@ class PostListItem extends PureComponent {
                 </li>
               </If>
               <li className={styles["post-list-item__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(item.created_at).format('YYYY-MM-DD')}</li>
-              <li className={styles["post-list-item__info-item"]}><Icon type="message" />&nbsp;10 Comments</li>
+              <li className={styles["post-list-item__info-item"]}><Icon type="message" />&nbsp;{item.comment_count} Comments</li>
               <li className={styles["post-list-item__info-item"]}><Icon type="eye" />&nbsp;{item.post_views}&nbsp;Views</li>
             </div>
           </div>
