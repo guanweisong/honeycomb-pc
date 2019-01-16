@@ -50,14 +50,14 @@ class PostListItem extends PureComponent {
           </If>
           <div className={styles["post-list-item__content"]}>
             <div className={styles["post-list-item__title"]}>{item.post_title}</div>
-            <If condition={item.post_type !== 2}>
-              <div className={styles["post-list-item__intro"]}>
+            <div className={styles["post-list-item__intro"]}>
+              <If condition={item.post_type !== 2}>
                 {item.post_content}
-                <div className={styles["post-list-item__more"]}>
-                  <Link to={`/archives/${item._id}`}>查看全文</Link>
-                </div>
+              </If>
+              <div className={styles["post-list-item__more"]}>
+                <Link to={`/archives/${item._id}`}>查看全文</Link>
               </div>
-            </If>
+            </div>
             <div className={styles["post-list-item__info"]}>
               <li className={styles["post-list-item__info-item"]}><Icon type="user" />&nbsp;{item.post_author.user_name}</li>
               <li className={styles["post-list-item__info-item"]}><Icon type="folder-open" />&nbsp;{item.post_category.category_title}</li>

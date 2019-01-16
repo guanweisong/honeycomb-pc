@@ -132,7 +132,14 @@ class Archives extends PureComponent {
                   <li className={styles["detail__info-item"]}><Icon type="message" />&nbsp;10 Comments</li>
                   <li className={styles["detail__info-item"]}><Icon type="eye" />&nbsp;{detail.post_views}&nbsp;Views</li>
                 </ul>
-                <div className={styles["detail__detail"]}>{detail.post_content}</div>
+                <div
+                  className={classNames({
+                    [styles["detail__detail"]]: true,
+                    'markdown-body': true,
+                  })}
+                  dangerouslySetInnerHTML={{__html: detail.post_content}}
+                >
+                  </div>
                 <If condition={detail.post_type === 1 || detail.post_type === 2}>
                   <div className={styles["detail__tags"]}>
                     <Icon type="tag" />&nbsp;

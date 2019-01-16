@@ -36,6 +36,7 @@
     "eslint-plugin-jsx-control-statements": "^2.2.1",
     "jsx-control-statements": "^3.2.8",
     "md5": "^2.2.1",
-    "moment": "^2.23.0"
+    "moment": "^2.23.0",
+    "primer-markdown": "^3.7.13"
   }
 }
