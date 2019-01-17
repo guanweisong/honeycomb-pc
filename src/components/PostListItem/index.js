@@ -3,6 +3,8 @@ import Link from 'umi/link';
 import { Icon } from 'antd';
 import moment from 'moment';
 import classNames from 'classnames';
+import Tags from '@/components/Tags';
+import { getFullCategoryPathById } from '@/utils/help';
 import styles from './index.less';
 
 class PostListItem extends PureComponent {
@@ -21,19 +23,9 @@ class PostListItem extends PureComponent {
       }
     };
   }
-  getTags = (arr) => {
-    const textArr = [];
-    arr.forEach((item) => {
-      item.forEach((n) => {
-        textArr.push(n.tag_name);
-      });
-    });
-    return textArr.join('、');
-  };
   render () {
-    console.log(this.props.data);
     return (
-      <For each="item" index="index" of={this.props.data}>
+      <For each="item" index="index" of={this.props.posts.list}>
         <div
           className={classNames({
             [styles["post-list-item"]]: true,
@@ -57,17 +49,16 @@ class PostListItem extends PureComponent {
               </div>
             </div>
             <div className={styles["post-list-item__info"]}>
-              <li className={styles["post-list-item__info-item"]}><Icon type="user" />&nbsp;{item.post_author.user_name}</li>
-              <li className={styles["post-list-item__info-item"]}><Icon type="folder-open" />&nbsp;{item.post_category.category_title}</li>
+              <li className={styles["post-list-item__info-item"]}><Icon type="user" />&nbsp;
+                <Link to={`/authors/${item.post_author._id}`} className="link-light">{item.post_author.user_name}</Link>
+              </li>
+              <li className={styles["post-list-item__info-item"]}><Icon type="folder-open" />&nbsp;
+                <Link to={getFullCategoryPathById(item.post_category._id, this.props.app.menu)} className="link-light">{item.post_category.category_title}</Link>
+              </li>
               <If condition={item.post_type === 1 || item.post_type === 2}>
                 <li className={styles["post-list-item__info-item"]}>
                   <Icon type="tag" />&nbsp;
-                  <If condition={item.post_type === 1}>
-                    {this.getTags([item.movie_director, item.movie_actor, item.movie_style])}
-                  </If>
-                  <If condition={item.post_type === 2}>
-                    {this.getTags([item.gallery_style])}
-                  </If>
+                  <Tags data={item}/>
                 </li>
               </If>
               <li className={styles["post-list-item__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(item.created_at).format('YYYY-MM-DD')}</li>

@@ -11,3 +11,10 @@ body, li, ul {
   max-width: 1200px;
   margin: 0 auto;
 }
+.link-light:link, .link-light:visited{
+  color: #666;
+}
+.link-light:hover {
+  color: #eb005d;
+  text-decoration: underline;
+}

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import moment from 'moment';
 import Menu from '@/components/Menu';
 import styles from './index.less';
@@ -16,7 +17,7 @@ class BasicLayout extends PureComponent {
       <div>
         <div className={styles.header}>
           <div className={`container ${styles["header__content"]}`}>
-            <div className={styles["header__logo"]}>{this.props.app.setting.site_name}</div>
+            <div className={styles["header__logo"]}><Link to="/">{this.props.app.setting.site_name}</Link></div>
             <div className={styles["header__menu"]}><Menu/></div>
           </div>
         </div>

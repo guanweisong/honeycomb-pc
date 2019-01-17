@@ -38,6 +38,14 @@ export default {
           component: './category',
         },
         {
+          path: '/tags/:tagId',
+          component: './category',
+        },
+        {
+          path: '/authors/:authorId',
+          component: './category',
+        },
+        {
           path: '/archives/:id',
           component: './archives',
         },

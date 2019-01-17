@@ -13,32 +13,35 @@ class Category extends PureComponent {
     super(props);
   }
   componentDidMount() {
-    this.getData(this.props.computedMatch.params.firstCategory, this.props.computedMatch.params.secondCategory);
+    this.getData(this.props.computedMatch.params);
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.computedMatch.url !== this.props.computedMatch.url || nextProps.location.search !== this.props.location.search) {
-      const firstCategory = nextProps.computedMatch.params.firstCategory;
-      const secondCategory = nextProps.computedMatch.params.secondCategory;
-      this.getData(firstCategory, secondCategory);
+      this.getData(nextProps.computedMatch.params);
     }
   }
-  getData = (firstCategory, secondCategory) => {
-    const params = {};
-    if (!secondCategory && firstCategory) {
-      const parentId = this.props.app.menu.find((item) => item.category_title_en === firstCategory)._id;
+  getData = (params) => {
+    const condition = {};
+    if (!params.secondCategory && params.firstCategory) {
+      const parentId = this.props.app.menu.find((item) => item.category_title_en === params.firstCategory)._id;
       const ids = [];
       this.props.app.menu.forEach((item) => {
         if (item.category_parent === parentId) {
           ids.push(item._id);
         }
       });
-      params.post_category = (ids.length ? ids : parentId);
-    } else if (secondCategory) {
-      params.post_category = this.props.app.menu.find((item) => item.category_title_en === secondCategory)._id;
+      condition.post_category = (ids.length ? ids : parentId);
+    } else if (params.secondCategory) {
+      condition.post_category = this.props.app.menu.find((item) => item.category_title_en === params.secondCategory)._id;
+    } else if (params.tagId) {
+      condition.post_tag = params.tagId;
+    } else if (params.authorId) {
+      condition.post_author = params.authorId;
     }
+    console.log('getData', condition);
     this.props.dispatch({
       type: 'posts/indexPostList',
-      payload: {...params, ...this.props.location.query},
+      payload: {...condition, ...this.props.location.query},
     });
   };
   onPaginationChange = (page, pageSize) => {
@@ -46,16 +49,16 @@ class Category extends PureComponent {
       routerRedux.push({
         query: {...this.props.location.query, page: page, limit: pageSize}
       })
-
     );
   };
   render() {
+    console.log(this)
     return (
       <Spin spinning={this.props.posts.loading}>
         <div className="container">
           <Choose>
             <When condition={this.props.posts.list.length > 0}>
-              <PostListItem data={this.props.posts.list}/>
+              <PostListItem {...this.props}/>
               <div className={styles.pagination}>
                 <Pagination
                   defaultCurrent={this.props.location.query.page * 1 || 1}

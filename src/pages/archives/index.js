@@ -3,8 +3,9 @@ import { Spin, Empty, Icon, Form, Input, Button } from 'antd';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import moment from 'moment';
-import { routerRedux } from 'dva/router';
+import Tags from '@/components/Tags';
 import styles from './index.less';
+import Link from "umi/link";
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -34,15 +35,6 @@ class Archives extends PureComponent {
       type: 'comments/index',
       payload: id,
     });
-  };
-  getTags = (arr) => {
-    const textArr = [];
-    arr.forEach((item) => {
-      item.forEach((n) => {
-        textArr.push(n.tag_name);
-      });
-    });
-    return textArr.join('、');
   };
   handleReply = (item) => {
     if (item !== null) {
@@ -126,7 +118,9 @@ class Archives extends PureComponent {
               <div className={styles["detail__content"]}>
                 <h1 className={styles["detail__title"]}>{detail.post_title}</h1>
                 <ul className={styles["detail__info"]}>
-                  <li className={styles["detail__info-item"]}><Icon type="user" />&nbsp;{detail.post_author.user_name}</li>
+                  <li className={styles["detail__info-item"]}><Icon type="user" />&nbsp;
+                    <Link to={`/authors/${detail.post_author._id}`} className="link-light">{detail.post_author.user_name}</Link>
+                  </li>
                   <li className={styles["detail__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(detail.created_at).format('YYYY-MM-DD')}</li>
                   <li className={styles["detail__info-item"]}><Icon type="message" />&nbsp;{this.props.comments.total} Comments</li>
                   <li className={styles["detail__info-item"]}><Icon type="eye" />&nbsp;{detail.post_views}&nbsp;Views</li>
@@ -142,12 +136,7 @@ class Archives extends PureComponent {
                 <If condition={detail.post_type === 1 || detail.post_type === 2}>
                   <div className={styles["detail__tags"]}>
                     <Icon type="tag" />&nbsp;
-                    <If condition={detail.post_type === 1}>
-                      {this.getTags([detail.movie_director, detail.movie_actor, detail.movie_style])}
-                    </If>
-                    <If condition={detail.post_type === 2}>
-                      {this.getTags([detail.gallery_style])}
-                    </If>
+                    <Tags data={detail}/>
                   </div>
                 </If>
               </div>

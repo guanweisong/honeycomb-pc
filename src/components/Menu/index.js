@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import Link from 'umi/link';
 import { withRouter } from "react-router";
 import classNames from 'classnames';
+import listToTree from 'list-to-tree-lite';
 import styles from './index.less';
 
 @withRouter
@@ -12,28 +13,16 @@ class Menu extends PureComponent {
     super(props)
   };
   formatCategorise = () => {
-    const data = this.props.app.menu;
+    const menu = listToTree(this.props.app.menu, {idKey: '_id', parentKey: 'category_parent'});
     const result = [
       {
         category_title: '首页',
         category_title_en: '',
         isHome: true,
+        children: [],
       }
     ];
-    data.forEach((item) => {
-      if (item.category_parent === "0") {
-        result.push(item);
-      }
-    });
-    result.forEach((item) => {
-      item.child = [];
-      data.forEach((n) => {
-        if (n.category_parent === item._id) {
-          item.child.push(n);
-        }
-      });
-    });
-    return result;
+    return [...result, ...menu];
   };
   getActiveStatus = (category_title_en) => {
     let flag = false;
@@ -64,9 +53,9 @@ class Menu extends PureComponent {
               <div className={styles["menu-first__item-name"]}>
                 <Link to={`${firstLevel.isHome === true ? '': '/category'}/${firstLevel.category_title_en}`}>{firstLevel.category_title}</Link>
               </div>
-              <If condition={firstLevel.child.length > 0}>
+              <If condition={firstLevel.children.length > 0}>
                 <ul className={styles["menu-second"]}>
-                  <For each="secondLevel" of={firstLevel.child}>
+                  <For each="secondLevel" of={firstLevel.children}>
                     <li
                       className={classNames({
                         [styles["menu-second__item"]]: true,
