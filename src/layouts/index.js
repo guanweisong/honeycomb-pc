@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
+import classnames from 'classnames';
 import Menu from '@/components/Menu';
 import styles from './index.less';
 
@@ -13,15 +14,26 @@ class BasicLayout extends PureComponent {
     }
   }
   render() {
+    const isMovieDetail = this.props.app.movieDetail.isMovie;
     return (
-      <div>
+      <div
+        className={classnames({
+          [styles.layout]: true,
+          [styles["movie-detail"]]: isMovieDetail,
+        })}
+        style={{
+          backgroundImage: isMovieDetail ?  `url(//${this.props.app.movieDetail.background})` : '',
+        }}
+      >
         <div className={styles.header}>
           <div className={`container ${styles["header__content"]}`}>
             <div className={styles["header__logo"]}><Link to="/">{this.props.app.setting.site_name}</Link></div>
             <div className={styles["header__menu"]}><Menu/></div>
           </div>
         </div>
+        <div className={styles.body}>
         { this.props.children }
+        </div>
         <div className={styles.footer}>
           ©{moment().format('YYYY')}&nbsp;{this.props.app.setting.site_copyright}
         </div>

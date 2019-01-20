@@ -50,7 +50,7 @@ class PostListItem extends PureComponent {
             </div>
             <div className={styles["post-list-item__info"]}>
               <li className={styles["post-list-item__info-item"]}><Icon type="user" />&nbsp;
-                <Link to={`/authors/${item.post_author._id}`} className="link-light">{item.post_author.user_name}</Link>
+                <Link to={`/authors/${encodeURI(item.post_author.user_name)}`} className="link-light">{item.post_author.user_name}</Link>
               </li>
               <li className={styles["post-list-item__info-item"]}><Icon type="folder-open" />&nbsp;
                 <Link to={getFullCategoryPathById(item.post_category._id, this.props.app.menu)} className="link-light">{item.post_category.category_title}</Link>

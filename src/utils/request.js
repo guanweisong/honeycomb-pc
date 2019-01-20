@@ -12,13 +12,7 @@ const instance = axios.create({
 instance.interceptors.response.use(res=>{
   return res;
 }, err => {
-  switch (err.response.status) {
-    case 401:
-    case 403:
-      message.error(err.response.data.error);
-      break;
-    default: message.error('操作失败，请稍后再试');
-  }
-})
+  message.error(err.response.data.error);
+});
 
 export default instance;

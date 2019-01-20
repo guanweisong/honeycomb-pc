@@ -20,6 +20,12 @@ class Category extends PureComponent {
       this.getData(nextProps.computedMatch.params);
     }
   }
+  componentWillUnmount() {
+    this.props.dispatch({
+      type: 'app/setCurrentCategoryPath',
+      payload: [],
+    })
+  }
   getData = (params) => {
     const condition = {};
     if (!params.secondCategory && params.firstCategory) {
@@ -31,12 +37,20 @@ class Category extends PureComponent {
         }
       });
       condition.post_category = (ids.length ? ids : parentId);
+      this.props.dispatch({
+        type: 'app/setCurrentCategoryPath',
+        payload: [params.firstCategory],
+      })
     } else if (params.secondCategory) {
       condition.post_category = this.props.app.menu.find((item) => item.category_title_en === params.secondCategory)._id;
-    } else if (params.tagId) {
-      condition.post_tag = params.tagId;
-    } else if (params.authorId) {
-      condition.post_author = params.authorId;
+      this.props.dispatch({
+        type: 'app/setCurrentCategoryPath',
+        payload: [params.firstCategory, params.secondCategory],
+      })
+    } else if (params.tagName) {
+      condition.tag_name = params.tagName;
+    } else if (params.authorName) {
+      condition.user_name = params.authorName;
     }
     console.log('getData', condition);
     this.props.dispatch({
@@ -51,11 +65,25 @@ class Category extends PureComponent {
       })
     );
   };
+  getTitle = () => {
+    console.log('getTitle', this.props);
+    const authorName = this.props.computedMatch.params.authorName;
+    const tagName = this.props.computedMatch.params.tagName;
+    if (authorName) {
+      return `作者“${authorName}”下的所有文章`;
+    } else if (tagName) {
+      return `标签“${tagName}”下的所有文章`;
+    } else {
+      return '';
+    }
+  };
   render() {
-    console.log(this)
     return (
       <Spin spinning={this.props.posts.loading}>
         <div className="container">
+          <If condition={this.getTitle() !== ''}>
+            <div className={styles.title}>{this.getTitle()}</div>
+          </If>
           <Choose>
             <When condition={this.props.posts.list.length > 0}>
               <PostListItem {...this.props}/>

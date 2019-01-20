@@ -24,19 +24,6 @@ class Menu extends PureComponent {
     ];
     return [...result, ...menu];
   };
-  getActiveStatus = (category_title_en) => {
-    let flag = false;
-    if (category_title_en === '') {
-      if (this.props.location.pathname === '/') {
-        flag = true;
-      }
-    } else {
-      if (this.props.location.pathname.indexOf(category_title_en) !== -1) {
-        flag = true;
-      }
-    }
-    return flag;
-  };
   render () {
     const data = this.formatCategorise();
     return (
@@ -46,7 +33,7 @@ class Menu extends PureComponent {
             <li
               className={classNames({
                 [styles["menu-first__item"]]: true,
-                [styles["menu-first__item--active"]]: this.getActiveStatus(firstLevel.category_title_en),
+                [styles["menu-first__item--active"]]: this.props.app.currentCategoryPath[0] === firstLevel.category_title_en || (firstLevel.category_title_en === '' && this.props.location.pathname === '/'),
               })}
               key={firstLevel.category_title_en}
             >
@@ -59,7 +46,7 @@ class Menu extends PureComponent {
                     <li
                       className={classNames({
                         [styles["menu-second__item"]]: true,
-                        [styles["menu-second__item--active"]]: this.getActiveStatus(secondLevel.category_title_en),
+                        [styles["menu-second__item--active"]]: this.props.app.currentCategoryPath[1] === secondLevel.category_title_en,
                       })}
                       key={secondLevel.category_title_en}
                     >

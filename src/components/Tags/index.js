@@ -29,7 +29,7 @@ export default class Tag extends PureComponent {
       <span>
         <For each="item" index="index" of={tags}>
           <If condition={index !== 0}>、</If>
-          <Link to={`/tags/${item._id}`} className="link-light" key={index}>{item.tag_name}</Link>
+          <Link to={`/tags/${encodeURI(item.tag_name)}`} className="link-light" key={index}>{item.tag_name}</Link>
         </For>
       </span>
     )

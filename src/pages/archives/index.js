@@ -26,6 +26,19 @@ class Archives extends PureComponent {
       this.getData(nextProps.computedMatch.params.id);
     }
   }
+  componentWillUnmount() {
+    this.props.dispatch({
+      type: 'app/setMovieDetail',
+      payload: {
+        isMovie: false,
+        background: '',
+      },
+    });
+    this.props.dispatch({
+      type: 'app/setCurrentCategoryPath',
+      payload: [],
+    });
+  }
   getData = (id) => {
     this.props.dispatch({
       type: 'posts/indexPostDetail',
@@ -58,10 +71,14 @@ class Archives extends PureComponent {
       console.log('handleSubmit', data);
       this.props.dispatch({
         type: 'comments/create',
-        payload: data,
+        payload: {
+          ...data,
+          callback: () => {
+            this.props.form.resetFields();
+            this.handleReply(null);
+          }
+        },
       });
-      this.props.form.resetFields();
-      this.handleReply(null);
     });
   };
   renderCommentList = (data) => {
@@ -106,7 +123,7 @@ class Archives extends PureComponent {
         </li>
       )
     })
-  }
+  };
   render() {
     const { detail } = this.props.posts;
     const { getFieldDecorator } = this.props.form;
@@ -121,6 +138,9 @@ class Archives extends PureComponent {
                   <li className={styles["detail__info-item"]}><Icon type="user" />&nbsp;
                     <Link to={`/authors/${detail.post_author._id}`} className="link-light">{detail.post_author.user_name}</Link>
                   </li>
+                  <If condition={detail.post_type === 2}>
+                    <li className={styles["detail__info-item"]}><Icon type="environment" />&nbsp;{detail.gallery_location}</li>
+                  </If>
                   <li className={styles["detail__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(detail.created_at).format('YYYY-MM-DD')}</li>
                   <li className={styles["detail__info-item"]}><Icon type="message" />&nbsp;{this.props.comments.total} Comments</li>
                   <li className={styles["detail__info-item"]}><Icon type="eye" />&nbsp;{detail.post_views}&nbsp;Views</li>
@@ -131,8 +151,7 @@ class Archives extends PureComponent {
                     'markdown-body': true,
                   })}
                   dangerouslySetInnerHTML={{__html: detail.post_content}}
-                >
-                  </div>
+                />
                 <If condition={detail.post_type === 1 || detail.post_type === 2}>
                   <div className={styles["detail__tags"]}>
                     <Icon type="tag" />&nbsp;

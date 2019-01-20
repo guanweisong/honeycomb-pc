@@ -41,6 +41,7 @@ export default {
           type: 'index',
           payload: id,
         });
+        values.callback && values.callback();
       }
     },
   },

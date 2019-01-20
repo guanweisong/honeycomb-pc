@@ -38,11 +38,11 @@ export default {
           component: './category',
         },
         {
-          path: '/tags/:tagId',
+          path: '/tags/:tagName',
           component: './category',
         },
         {
-          path: '/authors/:authorId',
+          path: '/authors/:authorName',
           component: './category',
         },
         {
