@@ -37,6 +37,7 @@
     "jsx-control-statements": "^3.2.8",
     "list-to-tree-lite": "^0.1.0",
     "moment": "^2.23.0",
-    "primer-markdown": "^3.7.13"
+    "primer-markdown": "^3.7.13",
+    "react-helmet": "^5.2.0"
   }
 }

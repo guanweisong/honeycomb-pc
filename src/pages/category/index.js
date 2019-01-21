@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Pagination, Spin, Empty } from 'antd';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
+import { Helmet } from "react-helmet";
 import PostListItem from '@/components/PostListItem';
 import styles from './index.less';
 
@@ -78,9 +79,21 @@ class Category extends PureComponent {
     }
   };
   render() {
+    const currentMenu = this.props.app.menu.find(item => item.category_title_en === this.props.app.currentCategoryPath[this.props.app.currentCategoryPath.length - 1]);
     return (
       <Spin spinning={this.props.posts.loading}>
         <div className="container">
+          <Helmet>
+            <If condition={currentMenu}>
+              <title>{`${currentMenu.category_title}分类列表_${this.props.app.setting.site_name}`}</title>
+            </If>
+            <If condition={this.getTitle() !== ''}>
+              <title>{`${this.getTitle()}_${this.props.app.setting.site_name}`}</title>
+            </If>
+            <If condition={this.props.computedMatch.path === '/'}>
+              <title>{`首页_${this.props.app.setting.site_name}`}</title>
+            </If>
+          </Helmet>
           <If condition={this.getTitle() !== ''}>
             <div className={styles.title}>{this.getTitle()}</div>
           </If>

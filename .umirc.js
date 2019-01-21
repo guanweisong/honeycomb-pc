@@ -10,7 +10,7 @@ export default {
         webpackChunkName: true,
         loadingComponent: './components/Loader/Loader'
       },
-      title: 'honeycomb-pc',
+      title: '',
       dll: true,
       hardSource: true,
       routes: {

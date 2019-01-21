@@ -3,6 +3,7 @@ import { Spin, Empty, Icon, Form, Input, Button } from 'antd';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import moment from 'moment';
+import { Helmet } from "react-helmet";
 import Tags from '@/components/Tags';
 import styles from './index.less';
 import Link from "umi/link";
@@ -132,11 +133,14 @@ class Archives extends PureComponent {
         <div className="container">
           <Choose>
             <When condition={detail}>
+              <Helmet>
+                <title>{`${detail.post_title}_${this.props.app.setting.site_name}`}</title>
+              </Helmet>
               <div className={styles["detail__content"]}>
                 <h1 className={styles["detail__title"]}>{detail.post_title}</h1>
                 <ul className={styles["detail__info"]}>
                   <li className={styles["detail__info-item"]}><Icon type="user" />&nbsp;
-                    <Link to={`/authors/${detail.post_author._id}`} className="link-light">{detail.post_author.user_name}</Link>
+                    <Link to={`/authors/${detail.post_author.user_name}`} className="link-light">{detail.post_author.user_name}</Link>
                   </li>
                   <If condition={detail.post_type === 2}>
                     <li className={styles["detail__info-item"]}><Icon type="environment" />&nbsp;{detail.gallery_location}</li>
