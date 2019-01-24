@@ -56,7 +56,7 @@ class Category extends PureComponent {
     console.log('getData', condition);
     this.props.dispatch({
       type: 'posts/indexPostList',
-      payload: {...condition, ...this.props.location.query},
+      payload: {...condition, post_status: 0, ...this.props.location.query},
     });
   };
   onPaginationChange = (page, pageSize) => {
