@@ -34,6 +34,8 @@
     "babel-plugin-jsx-control-statements": "^4.0.0",
     "classnames": "^2.2.6",
     "eslint-plugin-jsx-control-statements": "^2.2.1",
+    "fancybox": "^3.0.1",
+    "jquery": "^3.3.1",
     "jsx-control-statements": "^3.2.8",
     "list-to-tree-lite": "^0.1.0",
     "moment": "^2.23.0",

@@ -45,6 +45,9 @@ export default {
         type: 'switchLoading',
         payload: false,
       });
+      setTimeout(()=> {
+        payload.callback && payload.callback();
+      }, 0);
       const menu = yield select(state => state.app.menu);
       const thisCategory = menu.find(item => item._id === post.post_category._id);
       const parentCategory = menu.filter(item => item._id === thisCategory.category_parent);

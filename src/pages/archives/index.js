@@ -3,6 +3,9 @@ import { Spin, Empty, Icon, Form, Input, Button } from 'antd';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import moment from 'moment';
+import $ from 'jquery';
+require('fancybox')($);
+import 'fancybox/dist/css/jquery.fancybox.css';
 import { Helmet } from "react-helmet";
 import Tags from '@/components/Tags';
 import styles from './index.less';
@@ -29,13 +32,6 @@ class Archives extends PureComponent {
   }
   componentWillUnmount() {
     this.props.dispatch({
-      type: 'app/setMovieDetail',
-      payload: {
-        isMovie: false,
-        background: '',
-      },
-    });
-    this.props.dispatch({
       type: 'app/setCurrentCategoryPath',
       payload: [],
     });
@@ -43,7 +39,15 @@ class Archives extends PureComponent {
   getData = (id) => {
     this.props.dispatch({
       type: 'posts/indexPostDetail',
-      payload: {_id: id},
+      payload: {
+        _id: id,
+        callback: ()=> {
+          $('.markdown-body img').each((index, item) => {
+            $(item).wrap(`<a href=${$(item).attr('src')} rel='gallery'></a>`);
+          });
+          $('.markdown-body [rel=gallery]').fancybox();
+        }
+      },
     });
     this.props.dispatch({
       type: 'comments/index',
