@@ -41,7 +41,16 @@ class PostListItem extends PureComponent {
             />
           </If>
           <div className={styles["post-list-item__content"]}>
-            <div className={styles["post-list-item__title"]}>{item.post_title}</div>
+            <div className={styles["post-list-item__title"]}>
+              <Choose>
+                <When condition={item.post_type === 1}>
+                  {item.post_title} {item.movie_name_en} ({moment(item.movie_time).format('YYYY')})
+                </When>
+                <Otherwise>
+                  {item.post_title}
+                </Otherwise>
+              </Choose>
+            </div>
             <div className={styles["post-list-item__intro"]}>
               {item.post_excerpt}
               <div className={styles["post-list-item__more"]}>

@@ -5,10 +5,6 @@ export default {
     menu: [],
     setting: {},
     currentCategoryPath: [],
-    movieDetail: {
-      isMovie: false,
-      background: '',
-    },
   },
   effects: {
     * indexMenu({}, { select, call, put }) {
@@ -52,9 +48,6 @@ export default {
     },
     setSetting(state, { payload: values }) {
       return { ...state, setting: values };
-    },
-    setMovieDetail(state, { payload: values }) {
-      return { ...state, movieDetail: values };
     },
     setCurrentCategoryPath(state, { payload: values }) {
       return { ...state, currentCategoryPath: values };

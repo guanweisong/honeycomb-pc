@@ -137,7 +137,16 @@ class Archives extends PureComponent {
                 <title>{`${detail.post_title}_${this.props.app.setting.site_name}`}</title>
               </Helmet>
               <div className={styles["detail__content"]}>
-                <h1 className={styles["detail__title"]}>{detail.post_title}</h1>
+                <h1 className={styles["detail__title"]}>
+                  <Choose>
+                    <When condition={detail.post_type === 1}>
+                      {detail.post_title} {detail.movie_name_en} ({moment(detail.movie_time).format('YYYY')})
+                    </When>
+                    <Otherwise>
+                      {detail.post_title}
+                    </Otherwise>
+                  </Choose>
+                </h1>
                 <ul className={styles["detail__info"]}>
                   <li className={styles["detail__info-item"]}><Icon type="user" />&nbsp;
                     <Link to={`/authors/${detail.post_author.user_name}`} className="link-light">{detail.post_author.user_name}</Link>

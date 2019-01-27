@@ -45,23 +45,6 @@ export default {
         type: 'switchLoading',
         payload: false,
       });
-      if (post.post_type === 1) {
-        yield put({
-          type: 'app/setMovieDetail',
-          payload: {
-            isMovie: true,
-            background: post.movie_photo.media_url,
-          },
-        });
-      } else {
-        yield put({
-          type: 'app/setMovieDetail',
-          payload: {
-            isMovie: false,
-            background: '',
-          },
-        });
-      }
       const menu = yield select(state => state.app.menu);
       const thisCategory = menu.find(item => item._id === post.post_category._id);
       const parentCategory = menu.filter(item => item._id === thisCategory.category_parent);

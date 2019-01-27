@@ -14,16 +14,11 @@ class BasicLayout extends PureComponent {
     }
   }
   render() {
-    const isMovieDetail = this.props.app.movieDetail.isMovie;
     return (
       <div
         className={classnames({
           [styles.layout]: true,
-          [styles["movie-detail"]]: isMovieDetail,
         })}
-        style={{
-          backgroundImage: isMovieDetail ?  `url(//${this.props.app.movieDetail.background})` : '',
-        }}
       >
         <div className={styles.header}>
           <div className={`container ${styles["header__content"]}`}>
