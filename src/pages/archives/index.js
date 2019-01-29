@@ -4,12 +4,12 @@ import classNames from 'classnames';
 import { connect } from 'dva';
 import moment from 'moment';
 import $ from 'jquery';
-require('fancybox')($);
 import 'fancybox/dist/css/jquery.fancybox.css';
 import { Helmet } from "react-helmet";
 import Tags from '@/components/Tags';
 import styles from './index.less';
 import Link from "umi/link";
+require('fancybox')($);
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -46,6 +46,13 @@ class Archives extends PureComponent {
             $(item).wrap(`<a href=${$(item).attr('src')} rel='gallery'></a>`);
           });
           $('.markdown-body [rel=gallery]').fancybox();
+          this.props.dispatch({
+            type: 'posts/indexRandomPostByCategoryId',
+            payload: {
+              post_category: this.props.posts.detail.post_category._id,
+              number: 10,
+            },
+          });
         }
       },
     });
@@ -130,7 +137,7 @@ class Archives extends PureComponent {
     })
   };
   render() {
-    const { detail } = this.props.posts;
+    const { detail, randomPostsList } = this.props.posts;
     const { getFieldDecorator } = this.props.form;
     return (
       <Spin spinning={this.props.posts.loading}>
@@ -176,21 +183,33 @@ class Archives extends PureComponent {
                   </div>
                 </If>
               </div>
-              <div className={styles["detail__comment"]}>
-                <If condition={this.props.comments.total !== 0}>
-                  <div className={styles["detail__comment-title"]}>
-                    <span className={styles["detail__comment-title-text"]}>{this.props.comments.total} Comments</span>
+              <If condition={randomPostsList.length > 0}>
+                <div className={styles["block"]}>
+                  <div className={styles["block__title"]}>猜你喜欢</div>
+                  <div className={styles["block__content"]}>
+                    <ul className={styles["detail__post-list"]}>
+                      <For each="item" index="index" of={randomPostsList}>
+                        <li key={index}><Link to={`/archives/${item._id}`}>{item.post_title}</Link></li>
+                      </For>
+                    </ul>
                   </div>
-                  <div className={styles["detail__comment-content"]}>
+                </div>
+              </If>
+              <div className={classNames({
+                  [styles["detail__comment"]]: true,
+                  [styles["block"]]: true,
+                })}
+              >
+                <If condition={this.props.comments.total !== 0}>
+                  <div className={styles["block__title"]}>{this.props.comments.total} Comments</div>
+                  <div className={styles["block__content"]}>
                     <ul className={styles["detail__comment-list"]}>
                       {this.renderCommentList(this.props.comments.list)}
                     </ul>
                   </div>
                 </If>
-                <div className={styles["detail__comment-title"]}>
-                  <span className={styles["detail__comment-title-text"]}>Leave A Comment</span>
-                </div>
-                <div className={styles["detail__comment-form"]}>
+                <div className={styles["block__title"]}>Leave A Comment</div>
+                <div className={styles["block__content"]}>
                   <If condition={this.props.comments.replyTo !== null}>
                     <div className={styles["detail__comment-reply"]}>
                       <span className={styles["detail__comment-reply-label"]}>Reply to:</span>

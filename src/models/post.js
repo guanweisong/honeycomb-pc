@@ -6,6 +6,7 @@ export default {
     total: null,
     loading: false,
     detail: null,
+    randomPostsList: [],
   },
   effects: {
     * indexPostList({ payload }, { select, call, put }) {
@@ -56,6 +57,14 @@ export default {
         type: 'app/setCurrentCategoryPath',
         payload: categoryPath,
       });
+    },
+    * indexRandomPostByCategoryId({ payload }, { select, call, put })  {
+      console.log('category=>model=>indexRandomPostByCategoryId');
+      const result = yield call(postsService.indexRandomPostByCategoryId, payload);
+      yield put({
+        type: 'saveRandomPostsListData',
+        payload: result.data,
+      });
     }
   },
   subscriptions: {},
@@ -65,6 +74,9 @@ export default {
     },
     saveDetailData(state, { payload: value }) {
       return { ...state, detail: value };
+    },
+    saveRandomPostsListData(state, { payload: value }) {
+      return { ...state, randomPostsList: value };
     },
     switchLoading(state, { payload: value }) {
       return { ...state, loading: value };

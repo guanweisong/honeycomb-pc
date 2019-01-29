@@ -8,3 +8,12 @@ export const indexPostList = (params) => {
     params: params,
   })
 };
+
+export const indexRandomPostByCategoryId = (params) => {
+  console.log('category=>service=>indexRandomPostByCategoryId');
+  return request({
+    url: '/posts/indexRandomPostByCategoryId',
+    method: 'get',
+    params: params,
+  })
+};
