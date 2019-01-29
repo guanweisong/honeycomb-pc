@@ -24,6 +24,7 @@ export default {
     "jsx-control-statements"
   ],
   theme: './src/theme.js',
+  hash: true,
   routes: [
     {
       path: '/',
