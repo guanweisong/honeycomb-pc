@@ -110,7 +110,9 @@ class Category extends PureComponent {
               </div>
             </When>
             <Otherwise>
-              <Empty description="没有找到文章"/>
+              <If condition={!this.props.posts.loading}>
+                <Empty description="没有找到文章"/>
+              </If>
             </Otherwise>
           </Choose>
         </div>

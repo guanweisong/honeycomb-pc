@@ -35,6 +35,21 @@ class Archives extends PureComponent {
       type: 'app/setCurrentCategoryPath',
       payload: [],
     });
+    this.props.dispatch({
+      type: 'posts/saveDetailData',
+      payload: null,
+    });
+    this.props.dispatch({
+      type: 'posts/saveRandomPostsListData',
+      payload: [],
+    });
+    this.props.dispatch({
+      type: 'comments/saveListData',
+      payload: {
+        list: [],
+        total: 0,
+      },
+    })
   }
   getData = (id) => {
     this.props.dispatch({
@@ -262,7 +277,9 @@ class Archives extends PureComponent {
               </div>
             </When>
             <Otherwise>
-              <Empty description="没有找到文章"/>
+              <If condition={!this.props.posts.loading}>
+                <Empty description="没有找到文章"/>
+              </If>
             </Otherwise>
           </Choose>
         </div>
