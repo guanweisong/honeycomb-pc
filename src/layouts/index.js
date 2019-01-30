@@ -5,6 +5,7 @@ import moment from 'moment';
 import classnames from 'classnames';
 import Menu from '@/components/Menu';
 import styles from './index.less';
+import { BackTop } from 'antd';
 
 @connect(({ app }) => ({ app }))
 class BasicLayout extends PureComponent {
@@ -32,6 +33,7 @@ class BasicLayout extends PureComponent {
         <div className={styles.footer}>
           ©{moment().format('YYYY')}&nbsp;{this.props.app.setting.site_copyright}
         </div>
+        <BackTop />
       </div>
     );
   }
