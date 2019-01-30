@@ -3,7 +3,10 @@ export default {
   namespace: 'app',
   state: {
     menu: [],
-    setting: {},
+    setting: {
+      site_name: '',
+      site_copyright: '',
+    },
     currentCategoryPath: [],
   },
   effects: {
