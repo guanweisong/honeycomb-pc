@@ -24,6 +24,30 @@ class Archives extends PureComponent {
   }
   componentDidMount() {
     this.getData(this.props.computedMatch.params.id);
+    this.captcha = new TencentCaptcha('2090829333', (res) => {
+      if (res.ret === 0) {
+        let data = this.props.form.getFieldsValue();
+        data = { ...data, comment_post: this.props.posts.detail._id};
+        if (this.props.comments.replyTo !== null) {
+          data = { ...data, comment_parent: this.props.comments.replyTo._id };
+        }
+        console.log('handleSubmit', data);
+        this.props.dispatch({
+          type: 'comments/create',
+          payload: {
+            ...data,
+            captcha: {
+              ticket: res.ticket,
+              randstr: res.randstr
+            },
+            callback: () => {
+              this.props.form.resetFields();
+              this.handleReply(null);
+            }
+          },
+        });
+      }
+    });
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.computedMatch.url !== this.props.computedMatch.url) {
@@ -90,22 +114,7 @@ class Archives extends PureComponent {
       if (errors) {
         return;
       }
-      let data = this.props.form.getFieldsValue();
-      data = { ...data, comment_post: this.props.posts.detail._id};
-      if (this.props.comments.replyTo !== null) {
-        data = { ...data, comment_parent: this.props.comments.replyTo._id};
-      }
-      console.log('handleSubmit', data);
-      this.props.dispatch({
-        type: 'comments/create',
-        payload: {
-          ...data,
-          callback: () => {
-            this.props.form.resetFields();
-            this.handleReply(null);
-          }
-        },
-      });
+      this.captcha.show();
     });
   };
   renderCommentList = (data) => {
@@ -270,7 +279,12 @@ class Archives extends PureComponent {
                       )}
                     </FormItem>
                     <FormItem>
-                      <Button type="primary" onClick={this.handleSubmit}>提交</Button>
+                      <Button
+                        type="primary"
+                        onClick={this.handleSubmit}
+                      >
+                        提交
+                      </Button>
                     </FormItem>
                   </Form>
                 </div>
