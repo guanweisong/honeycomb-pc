@@ -14,11 +14,11 @@ class Category extends PureComponent {
     super(props);
   }
   componentDidMount() {
-    this.getData(this.props.computedMatch.params);
+    this.getData(this.props.computedMatch.params, this.props.location.query);
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.computedMatch.url !== this.props.computedMatch.url || nextProps.location.search !== this.props.location.search) {
-      this.getData(nextProps.computedMatch.params);
+      this.getData(nextProps.computedMatch.params, nextProps.location.query);
     }
   }
   componentWillUnmount() {
@@ -27,7 +27,7 @@ class Category extends PureComponent {
       payload: [],
     })
   }
-  getData = (params) => {
+  getData = (params, query) => {
     const condition = {};
     if (!params.secondCategory && params.firstCategory) {
       const parentId = this.props.app.menu.find((item) => item.category_title_en === params.firstCategory)._id;
@@ -56,7 +56,7 @@ class Category extends PureComponent {
     console.log('getData', condition);
     this.props.dispatch({
       type: 'posts/indexPostList',
-      payload: {...condition, post_status: 0, ...this.props.location.query},
+      payload: {...condition, post_status: 0, ...query},
     });
   };
   onPaginationChange = (page, pageSize) => {
