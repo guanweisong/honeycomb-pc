@@ -28,6 +28,18 @@ class Category extends PureComponent {
     })
   }
   getData = (params, query) => {
+    if (this.props.app.menu.length === 0) {
+      this.props.dispatch({
+        type: 'app/indexMenu',
+        payload: {},
+      }).then(res => {
+        this.getDataFn(params, query);
+      })
+    } else {
+      this.getDataFn(params, query);
+    }
+  };
+  getDataFn = (params, query) => {
     const condition = {};
     if (!params.secondCategory && params.firstCategory) {
       const parentId = this.props.app.menu.find((item) => item.category_title_en === params.firstCategory)._id;
