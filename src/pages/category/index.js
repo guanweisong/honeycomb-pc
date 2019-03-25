@@ -41,35 +41,21 @@ class Category extends PureComponent {
   };
   getDataFn = (params, query) => {
     const condition = {};
-    if (!params.secondCategory && params.firstCategory) {
-      const parentId = this.props.app.menu.find((item) => item.category_title_en === params.firstCategory)._id;
-      const ids = [];
-      this.props.app.menu.forEach((item) => {
-        if (item.category_parent === parentId) {
-          ids.push(item._id);
-        }
-      });
-      condition.post_category = (ids.length ? ids : parentId);
-      this.props.dispatch({
-        type: 'app/setCurrentCategoryPath',
-        payload: [params.firstCategory],
-      })
-    } else if (params.secondCategory) {
-      condition.post_category = this.props.app.menu.find((item) => item.category_title_en === params.secondCategory)._id;
-      this.props.dispatch({
-        type: 'app/setCurrentCategoryPath',
-        payload: [params.firstCategory, params.secondCategory],
-      })
-    } else if (params.tagName) {
-      condition.tag_name = params.tagName;
-    } else if (params.authorName) {
-      condition.user_name = params.authorName;
+    const idEn = params.secondCategory || params.firstCategory;
+    if (idEn) {
+      condition._id = this.props.app.menu.find((item) => item.category_title_en === idEn)._id;
     }
-    console.log('getData', condition);
     this.props.dispatch({
-      type: 'posts/indexPostList',
+      type: 'posts/indexPostByCategoryId',
       payload: {...condition, post_status: 0, ...query},
     });
+    const path = [];
+    params.firstCategory && path.push(params.firstCategory);
+    params.secondCategory && path.push(params.secondCategory);
+    this.props.dispatch({
+      type: 'app/setCurrentCategoryPath',
+      payload: path,
+    })
   };
   onPaginationChange = (page, pageSize) => {
     this.props.dispatch(

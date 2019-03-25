@@ -1,13 +1,14 @@
 import request from '@/utils/request';
 
-export const indexPostList = (params) => {
-  console.log('category=>service=>indexPostList');
+export const indexPostByCategoryId = (params) => {
+  console.log('category=>service=>indexPostByCategoryId');
   return request({
-    url: '/posts',
+    url: '/posts/indexPostByCategoryId',
     method: 'get',
     params: params,
   })
 };
+
 
 export const indexRandomPostByCategoryId = (params) => {
   console.log('category=>service=>indexRandomPostByCategoryId');
