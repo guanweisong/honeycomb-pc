@@ -41,14 +41,29 @@ class Category extends PureComponent {
   };
   getDataFn = (params, query) => {
     const condition = {};
-    const idEn = params.secondCategory || params.firstCategory;
-    if (idEn) {
-      condition._id = this.props.app.menu.find((item) => item.category_title_en === idEn)._id;
+    if (params.tagName){
+      condition.tag_name = params.tagName;
+      this.props.dispatch({
+        type: 'posts/indexPostList',
+        payload: {...condition, post_status: 0, ...query},
+      });
+    } else if(params.authorName) {
+      condition.user_name = params.authorName;
+      this.props.dispatch({
+        type: 'posts/indexPostList',
+        payload: {...condition, post_status: 0, ...query},
+      });
+    } else {
+      const idEn = params.secondCategory || params.firstCategory;
+      if (idEn) {
+        condition._id = this.props.app.menu.find((item) => item.category_title_en === idEn)._id;
+      }
+      this.props.dispatch({
+        type: 'posts/indexPostByCategoryId',
+        payload: {...condition, post_status: 0, ...query},
+      });
     }
-    this.props.dispatch({
-      type: 'posts/indexPostByCategoryId',
-      payload: {...condition, post_status: 0, ...query},
-    });
+    // 设置菜单高亮
     const path = [];
     params.firstCategory && path.push(params.firstCategory);
     params.secondCategory && path.push(params.secondCategory);

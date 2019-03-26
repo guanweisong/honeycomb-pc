@@ -9,6 +9,27 @@ export default {
     randomPostsList: [],
   },
   effects: {
+    * indexPostList({ payload }, { select, call, put }) {
+      console.log('category=>model=>indexPostList');
+      yield put({
+        type: 'switchLoading',
+        payload: true,
+      });
+      const result = yield call(postsService.indexPostList, payload);
+      if (result.status === 200 ) {
+        yield put({
+          type: 'saveListData',
+          payload: {
+            list: result.data.list,
+            total: result.data.total,
+          },
+        });
+      }
+      yield put({
+        type: 'switchLoading',
+        payload: false,
+      });
+    },
     * indexPostDetail({ payload }, { select, call, put }) {
       console.log('category=>model=>indexPostDtail');
       yield put({
