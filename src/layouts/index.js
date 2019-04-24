@@ -31,7 +31,8 @@ class BasicLayout extends PureComponent {
         { this.props.children }
         </div>
         <div className={styles.footer}>
-          ©{moment().format('YYYY')}&nbsp;{this.props.app.setting.site_copyright}
+          <div>{this.props.app.setting.site_signature}</div>
+          <div>©{moment().format('YYYY')}&nbsp;{this.props.app.setting.site_copyright}</div>
         </div>
         <BackTop />
       </div>
