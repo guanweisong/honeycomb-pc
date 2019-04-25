@@ -37,7 +37,7 @@ class PostListItem extends PureComponent {
           <If condition={item.post_cover}>
             <div
               className={styles["post-list-item__banner"]}
-              style={{backgroundImage: `url(//${item.post_cover.media_url})`}}
+              style={{backgroundImage: `url(//${item.post_cover.media_url_720p})`}}
             />
           </If>
           <div className={styles["post-list-item__content"]}>
