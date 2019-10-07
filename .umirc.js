@@ -11,8 +11,6 @@ export default {
         loadingComponent: './components/Loader/Loader'
       },
       title: '',
-      dll: true,
-      hardSource: true,
       routes: {
         exclude: [
           /components/,
