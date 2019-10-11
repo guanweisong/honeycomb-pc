@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet";
 import Tags from '@/components/Tags';
 import styles from './index.less';
 import Link from "umi/link";
+import { getFullCategoryPathById } from '@/utils/help';
 require('fancybox')($);
 
 const FormItem = Form.Item;
@@ -186,9 +187,9 @@ class Archives extends PureComponent {
                   <li className={styles["detail__info-item"]}><Icon type="user" />&nbsp;
                     <Link to={`/authors/${detail.post_author.user_name}`} className="link-light">{detail.post_author.user_name}</Link>
                   </li>
-                  <If condition={detail.post_type === 2}>
-                    <li className={styles["detail__info-item"]}><Icon type="environment" />&nbsp;{detail.gallery_location}</li>
-                  </If>
+                  <li className={styles["detail__info-item"]}><Icon type="folder-open" />&nbsp;
+                    <Link to={getFullCategoryPathById(detail.post_category._id, this.props.app.menu)} className="link-light">{detail.post_category.category_title}</Link>
+                  </li>
                   <li className={styles["detail__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(detail.created_at).format('YYYY-MM-DD')}</li>
                   <li className={styles["detail__info-item"]}><Icon type="message" />&nbsp;{this.props.comments.total} Comments</li>
                   <li className={styles["detail__info-item"]}><Icon type="eye" />&nbsp;{detail.post_views}&nbsp;Views</li>
@@ -200,12 +201,17 @@ class Archives extends PureComponent {
                   })}
                   dangerouslySetInnerHTML={{__html: detail.post_content}}
                 />
-                <If condition={detail.post_type === 1 || detail.post_type === 2}>
-                  <div className={styles["detail__tags"]}>
-                    <Icon type="tag" />&nbsp;
-                    <Tags data={detail}/>
-                  </div>
-                </If>
+                <ul className={styles["detail__extra"]}>
+                  <If condition={detail.post_type === 2}>
+                    <li className={styles["detail__extra-item"]}><Icon type="camera" />&nbsp;{moment(detail.gallery_time).format('YYYY-MM-DD')}&nbsp;拍摄于&nbsp;{detail.gallery_location}</li>
+                  </If>
+                  <If condition={detail.post_type === 1}>
+                    <li className={styles["detail__extra-item"]}><Icon type="calendar" />&nbsp;上映时间：{moment(detail.movie_time).format('YYYY-MM-DD')}</li>
+                  </If>
+                  <If condition={detail.post_type === 1 || detail.post_type === 2}>
+                    <li className={styles["detail__extra-item"]}><Icon type="tag" />&nbsp;<Tags data={detail}/></li>
+                  </If>
+                </ul>
               </div>
               <If condition={randomPostsList.length > 0}>
                 <div className={styles["block"]}>
