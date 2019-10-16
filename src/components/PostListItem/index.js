@@ -5,35 +5,21 @@ import moment from 'moment';
 import classNames from 'classnames';
 import Tags from '@/components/Tags';
 import { getFullCategoryPathById } from '@/utils/help';
+import { postClass, postIcon} from '@/utils/mapping';
 import styles from './index.less';
 
 class PostListItem extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.mapping = {
-      wrapClass: {
-        0: 'post',
-        1: 'movie',
-        2: 'gallery',
-      },
-      icon: {
-        0: 'file-text',
-        1: 'video-camera',
-        2: 'picture',
-      }
-    };
-  }
   render () {
     return (
       <For each="item" index="index" of={this.props.posts.list}>
         <div
           className={classNames({
             [styles["post-list-item"]]: true,
-            [styles[this.mapping.wrapClass[item.post_type]]]: true,
+            [styles[postClass[item.post_type]]]: true,
           })}
           key={index}
         >
-          <div className={styles["post-list-item__mark"]}><Icon type={this.mapping.icon[item.post_type]} /></div>
+          <div className={styles["post-list-item__mark"]}><Icon type={postIcon[item.post_type]} /></div>
           <If condition={item.post_cover}>
             <div
               className={styles["post-list-item__banner"]}
@@ -42,14 +28,15 @@ class PostListItem extends PureComponent {
           </If>
           <div className={styles["post-list-item__content"]}>
             <div className={styles["post-list-item__title"]}>
-              <Choose>
-                <When condition={item.post_type === 1}>
-                  {item.post_title} {item.movie_name_en} ({moment(item.movie_time).format('YYYY')})
-                </When>
-                <Otherwise>
-                  {item.post_title}
-                </Otherwise>
-              </Choose>
+              <If condition={item.post_type === 1}>
+                {item.post_title} {item.movie_name_en} ({moment(item.movie_time).format('YYYY')})
+              </If>
+              <If condition={[0, 2].includes(item.post_type)}>
+                {item.post_title}
+              </If>
+              <If condition={item.post_type === 3}>
+                “{item.quote_content}” —— {item.quote_author}
+              </If>
             </div>
             <div className={styles["post-list-item__intro"]}>
               {item.post_excerpt}
