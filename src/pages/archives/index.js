@@ -171,7 +171,7 @@ class Archives extends PureComponent {
           <Choose>
             <When condition={detail}>
               <Helmet>
-                <title>{`${detail.post_title}_${this.props.app.setting.site_name}`}</title>
+                <title>{`${detail.post_title || detail.quote_content}_${this.props.app.setting.site_name}`}</title>
               </Helmet>
               <div className={styles["detail__content"]}
                    className={classNames({
