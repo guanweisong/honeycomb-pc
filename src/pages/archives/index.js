@@ -181,7 +181,7 @@ class Archives extends PureComponent {
               >
                 <h1 className={styles["detail__title"]}>
                   <If condition={detail.post_type === 1}>
-                    {detial.post_title} {detail.movie_name_en} ({moment(detail.movie_time).format('YYYY')})
+                    {detail.post_title} {detail.movie_name_en} ({moment(detail.movie_time).format('YYYY')})
                   </If>
                   <If condition={[0, 2].includes(detail.post_type)}>
                     {detail.post_title}
