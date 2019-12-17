@@ -1,14 +1,17 @@
+// @ts-ignore
+import { IConfig } from 'umi-types';
 
 // ref: https://umijs.org/config/
-export default {
+const config: IConfig = {
+  treeShaking: true,
   plugins: [
     // ref: https://umijs.org/plugin/umi-plugin-react.html
     ['umi-plugin-react', {
-      antd: true,
       dva: true,
+      antd: true,
       dynamicImport: {
         webpackChunkName: true,
-        loadingComponent: './components/Loader/Loader'
+        loadingComponent: './components/Loader'
       },
       title: '',
       routes: {
@@ -18,10 +21,7 @@ export default {
       },
     }],
   ],
-  extraBabelPlugins: [
-    "jsx-control-statements"
-  ],
-  theme: './src/theme.js',
+  theme: './src/theme.ts',
   hash: true,
   routes: [
     {
@@ -52,3 +52,5 @@ export default {
     },
   ],
 };
+
+export default config;

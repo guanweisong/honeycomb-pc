@@ -1,8 +1,32 @@
 import * as commentsService from '@/services/comment';
+import { CommentType } from '@/types/comment';
 import { message } from 'antd';
+import { Reducer } from 'redux';
+import { Effect } from 'dva';
 
-export default {
-  namespace: 'comments',
+export interface CommentStateType {
+  list?: CommentType [];
+  total?: number;
+  replyTo?: null | string;
+  loading?: boolean;
+}
+
+export interface CommentModelType {
+  namespace: string;
+  state: CommentStateType;
+  effects: {
+    index: Effect;
+    create: Effect;
+  };
+  reducers: {
+    saveListData: Reducer<CommentStateType>;
+    switchLoading: Reducer<CommentStateType>;
+    setReplyTo: Reducer<CommentStateType>;
+  };
+}
+
+const Model: CommentModelType = {
+  namespace: 'comment',
   state: {
     list: [],
     total: 0,
@@ -10,7 +34,7 @@ export default {
     loading: false,
   },
   effects: {
-    * index({ payload }, { select, call, put }) {
+    * index({ payload }, { call, put }) {
       console.log('comment=>model=>indexCommentList');
       yield put({
         type: 'switchLoading',
@@ -31,21 +55,18 @@ export default {
         payload: false,
       });
     },
-    * create({ payload: values }, { select, call, put }) {
+    * create({ payload: values }, { call, put }) {
       console.log('comment=>model=>create', values);
       const result = yield call(commentsService.create, values);
       if (result.status === 201) {
         message.success('发布成功');
-        const id = yield select(state => state.posts.detail._id);
         yield put({
           type: 'index',
-          payload: id,
+          payload: values.comment_post,
         });
-        values.callback && values.callback();
       }
     },
   },
-  subscriptions: {},
   reducers: {
     saveListData(state, { payload: { list, total } }) {
       return { ...state, list, total };
@@ -58,3 +79,6 @@ export default {
     },
   },
 };
+
+
+export default Model;

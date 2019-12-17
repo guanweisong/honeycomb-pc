@@ -4,10 +4,18 @@
     "start": "set port=8100 && umi dev",
     "build": "umi build",
     "test": "umi test",
-    "lint": "eslint --ext .js src mock tests",
+    "lint:ts": "tslint \"src/**/*.ts\" \"src/**/*.tsx\"",
     "precommit": "lint-staged"
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.9",
+    "@types/jest": "^23.3.12",
+    "@types/jquery": "^3.3.31",
+    "@types/react": "^16.7.18",
+    "@types/react-dom": "^16.0.11",
+    "@types/react-helmet": "^5.0.14",
+    "@types/react-redux": "^7.1.5",
+    "@types/react-test-renderer": "^16.0.3",
     "babel-eslint": "^9.0.0",
     "eslint": "^5.4.0",
     "eslint-config-umi": "^0.1.5",
@@ -17,12 +25,17 @@
     "eslint-plugin-react": "^7.11.1",
     "husky": "^0.14.3",
     "lint-staged": "^7.2.2",
+    "tslint": "^5.12.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.6.0",
+    "tsx-control-statements": "^2.16.5",
     "umi": "^2.1.2",
-    "umi-plugin-react": "^1.1.1"
+    "umi-plugin-react": "^1.1.1",
+    "umi-types": "^0.3.0"
   },
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint --fix",
+    "*.{ts,tsx}": [
+      "tslint --fix",
       "git add"
     ]
   },
@@ -31,15 +44,13 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "babel-plugin-jsx-control-statements": "^4.0.0",
     "classnames": "^2.2.6",
-    "eslint-plugin-jsx-control-statements": "^2.2.1",
     "fancybox": "^3.0.1",
     "jquery": "^3.3.1",
-    "jsx-control-statements": "^3.2.8",
     "list-to-tree-lite": "^0.1.0",
     "moment": "^2.23.0",
     "primer-markdown": "^3.7.13",
-    "react-helmet": "^5.2.0"
+    "react-helmet": "^5.2.0",
+    "react-redux": "^7.1.3"
   }
 }
