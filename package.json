@@ -9,29 +9,29 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.9",
-    "@types/jest": "^23.3.12",
+    "@types/jest": "^24.0.24",
     "@types/jquery": "^3.3.31",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",
     "@types/react-helmet": "^5.0.14",
     "@types/react-redux": "^7.1.5",
     "@types/react-test-renderer": "^16.0.3",
-    "babel-eslint": "^9.0.0",
-    "eslint": "^5.4.0",
-    "eslint-config-umi": "^0.1.5",
-    "eslint-plugin-flowtype": "^2.50.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.7.2",
+    "eslint-config-umi": "^1.6.0",
+    "eslint-plugin-flowtype": "^4.5.2",
     "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.11.1",
-    "husky": "^0.14.3",
-    "lint-staged": "^7.2.2",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
     "tslint": "^5.12.0",
     "tslint-eslint-rules": "^5.4.0",
-    "tslint-react": "^3.6.0",
+    "tslint-react": "^4.1.0",
     "tsx-control-statements": "^2.16.5",
     "umi": "^2.1.2",
     "umi-plugin-react": "^1.1.1",
-    "umi-types": "^0.3.0"
+    "umi-types": "^0.5.9"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -43,13 +43,13 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.19.0",
     "classnames": "^2.2.6",
     "fancybox": "^3.0.1",
     "jquery": "^3.3.1",
     "list-to-tree-lite": "^0.1.0",
     "moment": "^2.23.0",
-    "primer-markdown": "^3.7.13",
+    "primer-markdown": "^4.0.0",
     "react-helmet": "^5.2.0",
     "react-redux": "^7.1.3"
   }
