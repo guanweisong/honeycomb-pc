@@ -10,9 +10,15 @@ import { MenuStateType } from '@/models/menu';
 import { MenuType } from '@/types/menu';
 import { GlobalStoreType } from '@/types/globalStore';
 import { AnyAction, Dispatch } from 'redux';
+import H from 'history';
+
+interface Location extends H.Location {
+  query?: {[key: string]: string};
+}
 
 interface MenuProps {
-  dispatch: Dispatch<AnyAction>;
+  dispatch?: Dispatch<AnyAction>;
+  location: Location;
 }
 
 const Menu = (props: MenuProps) => {
@@ -36,6 +42,7 @@ const Menu = (props: MenuProps) => {
       <li
         className={classNames({
           [styles["menu-first__item"]]: true,
+          // @ts-ignore
           [styles["menu-first__item--active"]]: currentCategoryPath[0] === firstLevel.category_title_en || (firstLevel.category_title_en === '' && props.location.pathname === '/'),
         })}
         key={firstLevel.category_title_en}
@@ -61,6 +68,7 @@ const Menu = (props: MenuProps) => {
       <li
         className={classNames({
           [styles["menu-second__item"]]: true,
+          // @ts-ignore
           [styles["menu-second__item--active"]]: currentCategoryPath[1] === secondLevel.category_title_en,
         })}
         key={secondLevel.category_title_en}

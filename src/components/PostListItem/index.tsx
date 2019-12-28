@@ -17,60 +17,61 @@ interface PostListItemProps {
 }
 
 const PostListItem = (props: PostListItemProps) => {
+  
   const { menu } = useSelector<GlobalStoreType, MenuStateType>(state => state.menu);
-
-  return props.list.map(item => {
-
-    return (
-      <div
-        className={classNames({
-          [styles["post-list-item"]]: true,
-          [styles[Mapping.postClass[item.post_type]]]: true,
-        })}
-        key={item._id}
-      >
-        <div className={styles["post-list-item__mark"]}>
-          <Icon type={Mapping.postIcon[item.post_type]} />
-        </div>
-        {item.post_cover && (
-          <div
-            className={styles["post-list-item__banner"]}
-            style={{backgroundImage: `url(//${item.post_cover && item.post_cover.media_url_720p})`}}
-          />
-        )}
-        <div className={styles["post-list-item__content"]}>
-          <div className={styles["post-list-item__title"]}>
-            {item.post_type === 1 && `${item.post_title} ${item.movie_name_en} (${moment(item.movie_time).format('YYYY')})`}
-            {[0, 2].includes(item.post_type) && item.post_title}
-            {item.post_type === 3 && `“${item.quote_content}” —— ${item.quote_author}`}
+  return (
+    <>
+     {props.list.map(item =>
+        <div
+          className={classNames({
+            [styles["post-list-item"]]: true,
+            [styles[Mapping.postClass[item.post_type]]]: true,
+          })}
+          key={item._id}
+        >
+          <div className={styles["post-list-item__mark"]}>
+            <Icon type={Mapping.postIcon[item.post_type]} />
           </div>
-          <div className={styles["post-list-item__intro"]}>
-            {item.post_excerpt}
-            <div className={styles["post-list-item__more"]}>
-              <Link to={`/archives/${item._id}`}>查看全文</Link>
+          {item.post_cover && (
+            <div
+              className={styles["post-list-item__banner"]}
+              style={{backgroundImage: `url(//${item.post_cover && item.post_cover.media_url_720p})`}}
+            />
+          )}
+          <div className={styles["post-list-item__content"]}>
+            <div className={styles["post-list-item__title"]}>
+              {item.post_type === 1 && `${item.post_title} ${item.movie_name_en} (${moment(item.movie_time).format('YYYY')})`}
+              {[0, 2].includes(item.post_type) && item.post_title}
+              {item.post_type === 3 && `“${item.quote_content}” —— ${item.quote_author}`}
+            </div>
+            <div className={styles["post-list-item__intro"]}>
+              {item.post_excerpt}
+              <div className={styles["post-list-item__more"]}>
+                <Link to={`/archives/${item._id}`}>查看全文</Link>
+              </div>
+            </div>
+            <div className={styles["post-list-item__info"]}>
+              <li className={styles["post-list-item__info-item"]}><Icon type="user" />&nbsp;
+                <Link to={`/authors/${encodeURI(item.post_author.user_name)}`} className="link-light">{item.post_author.user_name}</Link>
+              </li>
+              <li className={styles["post-list-item__info-item"]}><Icon type="folder-open" />&nbsp;
+                <Link to={Helper.getFullCategoryPathById(item.post_category._id, menu)} className="link-light">{item.post_category.category_title}</Link>
+              </li>
+              {(item.post_type === 1 || item.post_type === 2) && (
+                <li className={styles["post-list-item__info-item"]}>
+                  <Icon type="tag" />&nbsp;
+                  <Tags {...item}/>
+                </li>
+              )}
+              <li className={styles["post-list-item__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(item.created_at).format('YYYY-MM-DD')}</li>
+              <li className={styles["post-list-item__info-item"]}><Icon type="message" />&nbsp;{item.comment_count} Comments</li>
+              <li className={styles["post-list-item__info-item"]}><Icon type="eye" />&nbsp;{item.post_views}&nbsp;Views</li>
             </div>
           </div>
-          <div className={styles["post-list-item__info"]}>
-            <li className={styles["post-list-item__info-item"]}><Icon type="user" />&nbsp;
-              <Link to={`/authors/${encodeURI(item.post_author.user_name)}`} className="link-light">{item.post_author.user_name}</Link>
-            </li>
-            <li className={styles["post-list-item__info-item"]}><Icon type="folder-open" />&nbsp;
-              <Link to={Helper.getFullCategoryPathById(item.post_category._id, menu)} className="link-light">{item.post_category.category_title}</Link>
-            </li>
-            {(item.post_type === 1 || item.post_type === 2) && (
-              <li className={styles["post-list-item__info-item"]}>
-                <Icon type="tag" />&nbsp;
-                <Tags data={item}/>
-              </li>
-            )}
-            <li className={styles["post-list-item__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(item.created_at).format('YYYY-MM-DD')}</li>
-            <li className={styles["post-list-item__info-item"]}><Icon type="message" />&nbsp;{item.comment_count} Comments</li>
-            <li className={styles["post-list-item__info-item"]}><Icon type="eye" />&nbsp;{item.post_views}&nbsp;Views</li>
-          </div>
         </div>
-      </div>
-    )
-  })
+      )}
+    </>
+  )
 }
 
 export default PostListItem;

@@ -37,11 +37,11 @@ const config: IConfig = {
           component: './category',
         },
         {
-          path: '/tags/:tagName',
+          path: '/tags/:tag_name',
           component: './category',
         },
         {
-          path: '/authors/:authorName',
+          path: '/authors/:user_name',
           component: './category',
         },
         {

@@ -7,6 +7,8 @@ export interface IndexPostListParamsType {
   limit?: number;
   tag_name?: string [];
   user_name?: string;
+  firstCategory?: string;
+  secondCategory?: string;
 }
 
 export interface IndexRandomPostListParamsType {

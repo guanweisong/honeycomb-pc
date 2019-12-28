@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Pagination, Spin, Empty } from 'antd';
-import { routerRedux } from 'dva/router';
+import router from 'umi/router';
 import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from 'react-redux';
 import { Dispatch, AnyAction } from 'redux';
@@ -12,10 +12,21 @@ import { PostStateType } from '@/models/post';
 import { MenuStateType } from '@/models/menu';
 import { GlobalStoreType } from '@/types/globalStore';
 import styles from './index.less';
+import H from 'history';
 
-interface CategoryProps {
+interface Location extends H.Location {
+  query: {[key: string]: string};
+}
+
+interface PathParams {
+  user_name: string;
+  tag_name: string;
+}
+
+interface CategoryProps {  
   dispatch: Dispatch<AnyAction>;
-  computedMatch: match;
+  computedMatch: match<PathParams>;
+  location: Location;
 }
 
 const Category = (props: CategoryProps) => {
@@ -24,8 +35,8 @@ const Category = (props: CategoryProps) => {
   const { menu, currentCategoryPath } = useSelector<GlobalStoreType, MenuStateType>(state => state.menu);
   const post = useSelector<GlobalStoreType, PostStateType>(state => state.post);
   const dispatch = useDispatch();
-
-  /**
+ 
+  /** 
    * 获取数据
    */
   useEffect(() => {
@@ -38,14 +49,15 @@ const Category = (props: CategoryProps) => {
    * 获取数据的函数
    */
   const getData = () => {
-    const params = props.computedMatch.params;
+    // @ts-ignore
+    const params: IndexPostListParamsType = props.computedMatch.params;
     const query = props.location.query;
-    const condition = {};
-    params.tagName && (condition.tag_name = params.tagName);
-    params.authorName && (condition.user_name = params.authorName);
+    const condition: IndexPostListParamsType = {};
+    params.tag_name && (condition.tag_name = params.tag_name);
+    params.user_name && (condition.user_name = params.user_name);
     const idEn = params.secondCategory || params.firstCategory;
     if (idEn) {
-      condition.category_id = menu.find(item => item.category_title_en === idEn)._id;
+      condition.category_id = menu.find(item => item.category_title_en === idEn)?._id;
     }
     dispatch({
       type: 'post/indexPostList',
@@ -59,19 +71,18 @@ const Category = (props: CategoryProps) => {
       type: 'menu/setCurrentCategoryPath',
       payload: path,
     })
-  };
+  }; 
 
   /**
    * 分页事件
    * @param page
    * @param pageSize
    */
-  const onPaginationChange = (page: IndexPostListParamsType, limit: IndexPostListParamsType) => {
-    dispatch(
-      routerRedux.push({
-        query: {...props.location.query, page, limit}
-      })
-    );
+  const onPaginationChange = (page: number, limit?: number) => {
+    router.push({
+      pathname: props.location.pathname,
+      query: {...props.location.query, page, limit}
+    });
   };
 
   /**
@@ -79,13 +90,12 @@ const Category = (props: CategoryProps) => {
    */
   const getTitle = () => {
     console.log('getTitle', props);
-    const authorName = props.computedMatch.params.authorName;
-    const tagName = props.computedMatch.params.tagName;
-    if (authorName) {
-
-      return `作者“${authorName}”下的所有文章`;
-    } else if (tagName) {
-      return `标签“${tagName}”下的所有文章`;
+    const user_name = props.computedMatch.params.user_name;
+    const tag_name = props.computedMatch.params.tag_name;
+    if (user_name) {
+      return `作者“${user_name}”下的所有文章`;
+    } else if (tag_name) {
+      return `标签“${tag_name}”下的所有文章`;
     } else {
       return '';
     }
@@ -108,10 +118,10 @@ const Category = (props: CategoryProps) => {
               <PostListItem list={post.list}/>
               <div className={styles.pagination}>
                 <Pagination
-                  defaultCurrent={props.location.query.page * 1 || 1}
+                  defaultCurrent={parseInt(props.location.query.page, 10) || 1}
                   total={post.total}
-                  pageSize={props.location.query.limit * 1 || 10}
-                  onChange={onPaginationChange}
+                  pageSize={parseInt(props.location.query.limit, 10) || 10}
+                  onChange={(page, pageSize) => onPaginationChange(page, pageSize)}
                 />
               </div>
             </>
@@ -126,4 +136,5 @@ const Category = (props: CategoryProps) => {
   )
 }
 
+// @ts-ignore
 export default withRouter(Category);

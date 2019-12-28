@@ -5,13 +5,13 @@ import { PostType } from '@/types/post';
 import * as postsService from '@/services/post';
 
 export interface PostStateType {
-  list?: PostType [];
-  total?: null | number;
-  loading?: boolean;
-  detail?: {
+  list: PostType [];
+  total: number;
+  loading: boolean;
+  detail: {
     string?: PostType,
   };
-  randomPostsList?: {
+  randomPostsList: {
     string?: PostType,
   };
 }
@@ -36,7 +36,7 @@ const Model: PostModelType = {
   namespace: 'post',
   state: {
     list: [],
-    total: null,
+    total: 0,
     loading: true,
     detail: {},
     randomPostsList: {},
@@ -93,15 +93,21 @@ const Model: PostModelType = {
     },
   },
   reducers: {
+    // @ts-ignore
     saveListData(state, { payload: { list, total } }) {
       return { ...state, list, total };
     },
+    // @ts-ignore
     saveDetailData(state, { payload: value }) {
+      // @ts-ignore
       return { ...state, detail: {...state.detail, [value._id]: value} };
     },
+    // @ts-ignore
     saveRandomPostsListData(state, { payload: {value, id} }) {
+      // @ts-ignore
       return { ...state, randomPostsList: {...state.randomPostsList, [id]: value} };
     },
+    // @ts-ignore
     switchLoading(state, { payload: value }) {
       return { ...state, loading: value };
     },

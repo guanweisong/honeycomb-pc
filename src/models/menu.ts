@@ -6,7 +6,7 @@ import { Effect } from 'dva';
 
 export interface MenuStateType {
   menu: MenuType [];
-  currentCategoryPath?: [];
+  currentCategoryPath: [];
 }
 
 
@@ -41,9 +41,11 @@ const Model: MenuModelType = {
     },
   },
   reducers: {
+    // @ts-ignore
     setMenu(state, { payload: values }) {
       return { ...state, menu: values };
     },
+    // @ts-ignore
     setCurrentCategoryPath(state, { payload: values }) {
       return { ...state, currentCategoryPath: values };
     },

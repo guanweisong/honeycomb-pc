@@ -1,11 +1,13 @@
 import React from 'react';
 import Link from 'umi/link';
+import { TagType } from '@/types/tag';
+import { PostType} from '@/types/post';
 
-const Tag = (props) => {
+const Tag = (props: PostType) => {
 
-  const getTags = (item) => {
+  const getTags = (item: PostType) => {
     const arr = [];
-    const result = [];
+    const result: TagType[] = [];
     if (item.post_type === 1) {
       arr.push(item.movie_director);
       arr.push(item.movie_actor);
@@ -15,14 +17,14 @@ const Tag = (props) => {
       arr.push(item.gallery_style);
     }
     arr.forEach((m) => {
-      m.forEach((n) => {
+      m && m.forEach((n) => {
         result.push(n);
       });
     });
     return result;
   }
 
-  const tags = getTags(props.data);
+  const tags = getTags(props);
 
   return (
     <span>

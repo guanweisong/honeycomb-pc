@@ -16,19 +16,31 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SettingStateType } from '@/models/setting';
 import { PostStateType } from '@/models/post';
 import { MenuStateType } from '@/models/menu';
-import { CommentStateType } from '@/models/comment';
+import { CommentStateType, ReplyToType } from '@/models/comment';
 import { CommentType } from '@/types/comment';
 import { GlobalStoreType } from '@/types/globalStore';
 import { AnyAction, Dispatch } from 'redux';
 require('fancybox')($);
+import H from 'history';
+import { PostType } from '@/types/post';
+
+interface Location extends H.Location {
+  query: {[key: string]: string};
+}
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
+interface PathParams {
+  id: string;
+}
+
 interface ArchivesProps extends FormComponentProps {
   dispatch: Dispatch<AnyAction>;
-  computedMatch: match;
+  computedMatch: match<PathParams>;
+  location: Location;
 }
+
 
 const Archives = (props: ArchivesProps) => {
 
@@ -39,10 +51,9 @@ const Archives = (props: ArchivesProps) => {
 
   const dispatch = useDispatch();
   const postId = props.computedMatch.params.id;
-  const postDetail = post.detail[postId];
-  const randomPostsList = post.randomPostsList[postId];
+  const postDetail: PostType = post.detail[postId];
+  const randomPostsList: PostType[] = post.randomPostsList[postId] || [];
   const { getFieldDecorator } = props.form;
-
 
   /**
    * 获取文章数据
@@ -75,12 +86,14 @@ const Archives = (props: ArchivesProps) => {
   useEffect(() => {
     if (postDetail) {
       const thisCategory = menu.find(item => item._id === postDetail.post_category._id);
-      const parentCategory = menu.filter(item => item._id === thisCategory.category_parent);
-      const categoryPath = parentCategory.length > 0 ? [parentCategory[0].category_title_en, thisCategory.category_title_en] : [thisCategory.category_title_en];
-      dispatch({
-        type: 'menu/setCurrentCategoryPath',
-        payload: categoryPath,
-      });
+      if (thisCategory) {
+        const parentCategory = menu.filter(item => item._id === thisCategory.category_parent);
+        const categoryPath = parentCategory.length > 0 ? [parentCategory[0].category_title_en, thisCategory.category_title_en] : [thisCategory.category_title_en];
+        dispatch({
+          type: 'menu/setCurrentCategoryPath',
+          payload: categoryPath,
+        });
+      }
     }
   }, [postDetail]);
 
@@ -89,7 +102,7 @@ const Archives = (props: ArchivesProps) => {
    */
   useEffect(() => {
     props.form.resetFields();
-    handleReply(null);
+    handleReply();
   }, [comment.total]);
 
   /**
@@ -122,13 +135,13 @@ const Archives = (props: ArchivesProps) => {
    * 评论回复事件
    * @param item
    */
-  const handleReply = (item) => {
+  const handleReply = (item?: ReplyToType) => {
     if (item !== null) {
       window.scrollTo(0 ,99999);
     }
     dispatch({
       type: 'comment/setReplyTo',
-      payload: item,
+      payload: item || null,
     });
   };
 
@@ -140,7 +153,8 @@ const Archives = (props: ArchivesProps) => {
       if (errors) {
         return;
       }
-      let captcha = new TencentCaptcha('2090829333', (res) => {
+      // @ts-ignore
+      let captcha = new TencentCaptcha('2090829333', (res: any) => {
         if (res.ret === 0) {
           let data = props.form.getFieldsValue();
           data = { ...data, comment_post: postDetail._id };
@@ -252,7 +266,7 @@ const Archives = (props: ArchivesProps) => {
                         [styles["detail__detail"]]: true,
                         'markdown-body': true,
                       })}
-                      dangerouslySetInnerHTML={{__html: postDetail.post_content}}
+                      dangerouslySetInnerHTML={{__html: postDetail.post_content || ''}}
                     />
                     <ul className={styles["detail__extra"]}>
                       {postDetail.post_type === 2 &&
@@ -276,13 +290,13 @@ const Archives = (props: ArchivesProps) => {
                         <li className={styles["detail__extra-item"]}>
                           <Icon type="tag" />
                           &nbsp;
-                          <Tags data={postDetail}/>
+                          <Tags {...postDetail}/>
                         </li>}
                     </ul>
                   </>
                 )}
               </div>
-              {randomPostsList && randomPostsList.length > 0 && (
+              {randomPostsList.length > 0 && (
                 <div className={styles["block"]}>
                   <div className={styles["block__title"]}>猜你喜欢</div>
                   <div className={styles["block__content"]}>
@@ -329,7 +343,7 @@ const Archives = (props: ArchivesProps) => {
                         <span className={styles["detail__comment-reply-name"]}>{comment.replyTo.comment_author}</span>
                         <span
                           className={styles["detail__comment-reply-cancel"]}
-                          onClick={() => handleReply(null)}
+                          onClick={() => handleReply()}
                         >
                           [取消]
                         </span>
@@ -390,4 +404,5 @@ const Archives = (props: ArchivesProps) => {
   )
 }
 
+// @ts-ignore
 export default withRouter(Form.create({})(Archives));

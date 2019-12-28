@@ -4,11 +4,16 @@ import { message } from 'antd';
 import { Reducer } from 'redux';
 import { Effect } from 'dva';
 
+export interface ReplyToType {
+  _id: string;
+  comment_author: string;
+}
+
 export interface CommentStateType {
-  list?: CommentType [];
-  total?: number;
-  replyTo?: null | string;
-  loading?: boolean;
+  list: CommentType [];
+  total: number;
+  replyTo: ReplyToType | null;
+  loading: boolean;
 }
 
 export interface CommentModelType {
@@ -68,12 +73,15 @@ const Model: CommentModelType = {
     },
   },
   reducers: {
+    // @ts-ignore
     saveListData(state, { payload: { list, total } }) {
       return { ...state, list, total };
     },
+    // @ts-ignore
     switchLoading(state, { payload: value }) {
       return { ...state, loading: value };
     },
+    // @ts-ignore
     setReplyTo(state, { payload: value }) {
       return { ...state, replyTo: value }
     },

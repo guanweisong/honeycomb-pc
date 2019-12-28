@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 import Link from 'umi/link';
 import moment from 'moment';
 import classnames from 'classnames';
@@ -7,9 +7,21 @@ import { withRouter } from "react-router";
 import { BackTop } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './index.less';
+import H from 'history';
+import { GlobalStoreType } from '@/types/globalStore';
+import { SettingStateType } from '@/models/setting';
 
-const BasicLayout = (props) => {
-  const { setting } = useSelector(state => state.setting);
+interface Location extends H.Location {
+  query: {[key: string]: string};
+}
+
+interface IProps {
+  children: ReactNode;
+  location: Location;
+}
+
+const BasicLayout = (props: IProps) => {
+  const { setting } = useSelector<GlobalStoreType, SettingStateType>(state => state.setting);
   const dispatch = useDispatch();
 
   useEffect(()=> {
@@ -51,4 +63,5 @@ const BasicLayout = (props) => {
   )
 }
 
+// @ts-ignore
 export default withRouter(BasicLayout);

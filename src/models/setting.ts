@@ -22,8 +22,10 @@ const Model: SettingModelType = {
   namespace: 'setting',
   state: {
     setting: {
+      _id: '',
       site_name: '',
       site_copyright: '',
+      site_signature: '',
     },
   },
   effects: {

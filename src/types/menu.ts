@@ -7,4 +7,6 @@ export interface MenuType {
   category_status: number;
   created_at: string;
   updated_at: string;
+  isHome: string;
+  children: MenuType[];
 }

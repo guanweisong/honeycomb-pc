@@ -1,7 +1,4 @@
-export interface TagType {
-  _id: string;
-  tag_name: string;
-}
+import { TagType } from './tag';
 
 export interface PostType {
   _id: string;

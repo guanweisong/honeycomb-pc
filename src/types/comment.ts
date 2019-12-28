@@ -11,4 +11,5 @@ export interface CommentType {
   comment_agent: string;
   comment_parent: string;
   comment_avatar: string;
+  children: CommentType[];
 }
