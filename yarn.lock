@@ -15071,6 +15071,11 @@ umi-plugin-dva@1.11.0:
     path-to-regexp "1.7.0"
     umi-utils "1.7.2"
 
+umi-plugin-ga@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.npm.taobao.org/umi-plugin-ga/download/umi-plugin-ga-1.1.5.tgz?cache=0&sync_timestamp=1562151177836&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fumi-plugin-ga%2Fdownload%2Fumi-plugin-ga-1.1.5.tgz#ad15c075f50d5ae54ee3bbde2be3cc9e883d24fc"
+  integrity sha1-rRXAdfUNWuVO47veK+PMnog9JPw=
+
 umi-plugin-hd@1.7.0-beta.2:
   version "1.7.0-beta.2"
   resolved "https://registry.npm.taobao.org/umi-plugin-hd/download/umi-plugin-hd-1.7.0-beta.2.tgz#6c2111ead36a6c47e1c45791b28c0c2c767bba45"

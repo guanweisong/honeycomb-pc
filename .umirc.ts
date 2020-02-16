@@ -20,6 +20,13 @@ const config: IConfig = {
         ],
       },
     }],
+    [
+      'umi-plugin-ga',
+      {
+        code: 'UA-158268354-1',
+        judge: () => true,
+      },
+    ],
   ],
   theme: './src/theme.ts',
   hash: true,
