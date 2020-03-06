@@ -1,12 +1,19 @@
 import React, { } from 'react';
-import Link from 'umi/link';
-import { Icon } from 'antd';
+import { Link } from 'umi';
+import {
+  UserOutlined,
+  FolderOpenOutlined,
+  TagOutlined,
+  ClockCircleOutlined,
+  MessageOutlined,
+  EyeOutlined
+} from '@ant-design/icons';
 import moment from 'moment';
 import classNames from 'classnames';
 import Tags from '@/components/Tags';
 import Helper from '@/utils/helper';
 import { useSelector } from 'react-redux';
-import Mapping from '@/utils/mapping';
+import Mapping from '@/utils/mapping.tsx';
 import styles from './index.less';
 import { GlobalStoreType } from '@/types/globalStore';
 import { MenuStateType } from '@/models/menu';
@@ -17,7 +24,7 @@ interface PostListItemProps {
 }
 
 const PostListItem = (props: PostListItemProps) => {
-  
+
   const { menu } = useSelector<GlobalStoreType, MenuStateType>(state => state.menu);
   return (
     <>
@@ -30,7 +37,7 @@ const PostListItem = (props: PostListItemProps) => {
           key={item._id}
         >
           <div className={styles["post-list-item__mark"]}>
-            <Icon type={Mapping.postIcon[item.post_type]} />
+            {Mapping.postIcon[item.post_type]}
           </div>
           {item.post_cover && (
             <div
@@ -51,21 +58,21 @@ const PostListItem = (props: PostListItemProps) => {
               </div>
             </div>
             <div className={styles["post-list-item__info"]}>
-              <li className={styles["post-list-item__info-item"]}><Icon type="user" />&nbsp;
+              <li className={styles["post-list-item__info-item"]}><UserOutlined />&nbsp;
                 <Link to={`/authors/${encodeURI(item.post_author.user_name)}`} className="link-light">{item.post_author.user_name}</Link>
               </li>
-              <li className={styles["post-list-item__info-item"]}><Icon type="folder-open" />&nbsp;
+              <li className={styles["post-list-item__info-item"]}><FolderOpenOutlined />&nbsp;
                 <Link to={Helper.getFullCategoryPathById(item.post_category._id, menu)} className="link-light">{item.post_category.category_title}</Link>
               </li>
               {(item.post_type === 1 || item.post_type === 2) && (
                 <li className={styles["post-list-item__info-item"]}>
-                  <Icon type="tag" />&nbsp;
+                  <TagOutlined />&nbsp;
                   <Tags {...item}/>
                 </li>
               )}
-              <li className={styles["post-list-item__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(item.created_at).format('YYYY-MM-DD')}</li>
-              <li className={styles["post-list-item__info-item"]}><Icon type="message" />&nbsp;{item.comment_count} Comments</li>
-              <li className={styles["post-list-item__info-item"]}><Icon type="eye" />&nbsp;{item.post_views}&nbsp;Views</li>
+              <li className={styles["post-list-item__info-item"]}><ClockCircleOutlined />&nbsp;{moment(item.created_at).format('YYYY-MM-DD')}</li>
+              <li className={styles["post-list-item__info-item"]}><MessageOutlined />&nbsp;{item.comment_count} Comments</li>
+              <li className={styles["post-list-item__info-item"]}><EyeOutlined />&nbsp;{item.post_views}&nbsp;Views</li>
             </div>
           </div>
         </div>

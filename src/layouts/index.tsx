@@ -1,5 +1,5 @@
 import React, { useEffect, ReactNode } from 'react';
-import Link from 'umi/link';
+import { Link } from 'umi';
 import moment from 'moment';
 import classnames from 'classnames';
 import Menu from '@/components/Menu';

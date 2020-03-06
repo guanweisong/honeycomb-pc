@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { Pagination, Spin, Empty } from 'antd';
-import router from 'umi/router';
+// @ts-ignore
+import { history } from 'umi';
 import { Helmet } from "react-helmet";
 import { useSelector, useDispatch } from 'react-redux';
 import { Dispatch, AnyAction } from 'redux';
-import { withRouter, match } from "react-router";
+import { match } from "react-router";
 import PostListItem from '@/components/PostListItem';
 import { IndexPostListParamsType } from '@/services/post';
 import { SettingStateType } from '@/models/setting';
@@ -23,9 +24,9 @@ interface PathParams {
   tag_name: string;
 }
 
-interface CategoryProps {  
+interface CategoryProps {
   dispatch: Dispatch<AnyAction>;
-  computedMatch: match<PathParams>;
+  match: match<PathParams>;
   location: Location;
 }
 
@@ -35,8 +36,8 @@ const Category = (props: CategoryProps) => {
   const { menu, currentCategoryPath } = useSelector<GlobalStoreType, MenuStateType>(state => state.menu);
   const post = useSelector<GlobalStoreType, PostStateType>(state => state.post);
   const dispatch = useDispatch();
- 
-  /** 
+
+  /**
    * 获取数据
    */
   useEffect(() => {
@@ -50,7 +51,7 @@ const Category = (props: CategoryProps) => {
    */
   const getData = () => {
     // @ts-ignore
-    const params: IndexPostListParamsType = props.computedMatch.params;
+    const params: IndexPostListParamsType = props.match.params;
     const query = props.location.query;
     const condition: IndexPostListParamsType = {};
     params.tag_name && (condition.tag_name = params.tag_name);
@@ -71,7 +72,7 @@ const Category = (props: CategoryProps) => {
       type: 'menu/setCurrentCategoryPath',
       payload: path,
     })
-  }; 
+  };
 
   /**
    * 分页事件
@@ -79,7 +80,7 @@ const Category = (props: CategoryProps) => {
    * @param pageSize
    */
   const onPaginationChange = (page: number, limit?: number) => {
-    router.push({
+    history.push({
       pathname: props.location.pathname,
       query: {...props.location.query, page, limit}
     });
@@ -90,8 +91,8 @@ const Category = (props: CategoryProps) => {
    */
   const getTitle = () => {
     console.log('getTitle', props);
-    const user_name = props.computedMatch.params.user_name;
-    const tag_name = props.computedMatch.params.tag_name;
+    const user_name = props.match.params.user_name;
+    const tag_name = props.match.params.tag_name;
     if (user_name) {
       return `作者“${user_name}”下的所有文章`;
     } else if (tag_name) {
@@ -109,11 +110,11 @@ const Category = (props: CategoryProps) => {
         <Helmet>
           {currentMenu && <title>{`${currentMenu.category_title}_${setting.site_name}`}</title>}
           {getTitle() !== '' && getTitle()}
-          {props.computedMatch.path === '/' && <title>{`首页_${setting.site_name}`}</title>}
+          {props.match.path === '/' && <title>{`首页_${setting.site_name}`}</title>}
         </Helmet>
         {getTitle() !== '' && <div className={styles.title}>{getTitle()}</div>}
         {
-          post.list.length > 0 ?
+          post.list.length > 0 ? (
             <>
               <PostListItem list={post.list}/>
               <div className={styles.pagination}>
@@ -125,6 +126,7 @@ const Category = (props: CategoryProps) => {
                 />
               </div>
             </>
+            )
             :
             !post.loading ?
               <Empty description="没有找到文章"/>
@@ -136,5 +138,4 @@ const Category = (props: CategoryProps) => {
   )
 }
 
-// @ts-ignore
-export default withRouter(Category);
+export default Category;

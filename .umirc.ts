@@ -1,34 +1,22 @@
 // @ts-ignore
 import { IConfig } from 'umi-types';
+import theme from './src/theme';
 
 // ref: https://umijs.org/config/
 const config: IConfig = {
-  treeShaking: true,
-  plugins: [
-    // ref: https://umijs.org/plugin/umi-plugin-react.html
-    ['umi-plugin-react', {
-      dva: true,
-      antd: true,
-      dynamicImport: {
-        webpackChunkName: true,
-        loadingComponent: './components/Loader'
-      },
-      title: '',
-      routes: {
-        exclude: [
-          /components/,
-        ],
-      },
-    }],
-    [
-      'umi-plugin-ga',
-      {
-        code: 'UA-158268354-1',
-        judge: () => true,
-      },
-    ],
-  ],
-  theme: './src/theme.ts',
+  dva: {
+    hmr: true,
+  },
+  antd: {},
+  dynamicImport: {
+    loading: '@/components/Loader'
+  },
+  title: '稻草人博客',
+  analytics: {
+    ga: 'UA-158268354-1',
+  },
+  theme: theme,
+  ignoreMomentLocale: true,
   hash: true,
   routes: [
     {

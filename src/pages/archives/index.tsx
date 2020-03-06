@@ -1,5 +1,16 @@
 import React, { useEffect } from 'react';
-import { Spin, Empty, Icon, Form, Input, Button } from 'antd';
+import { Spin, Empty, Input, Button, Form } from 'antd';
+import {
+  UserOutlined,
+  FolderOpenOutlined,
+  TagOutlined,
+  ClockCircleOutlined,
+  MessageOutlined,
+  EyeOutlined,
+  VideoCameraOutlined,
+  CalendarOutlined,
+  MailOutlined,
+} from '@ant-design/icons';
 import { FormComponentProps } from 'antd/lib/form/Form.d';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -8,10 +19,10 @@ import 'fancybox/dist/css/jquery.fancybox.css';
 import { Helmet } from "react-helmet";
 import Tags from '@/components/Tags';
 import styles from './index.less';
-import Link from "umi/link";
+import { Link }  from 'umi';
 import Helper from '@/utils/helper';
-import Mapping from '@/utils/mapping';
-import { match, withRouter } from 'react-router';
+import Mapping from '@/utils/mapping.tsx';
+import { match } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { SettingStateType } from '@/models/setting';
 import { PostStateType } from '@/models/post';
@@ -37,10 +48,9 @@ interface PathParams {
 
 interface ArchivesProps extends FormComponentProps {
   dispatch: Dispatch<AnyAction>;
-  computedMatch: match<PathParams>;
+  match: match<PathParams>;
   location: Location;
 }
-
 
 const Archives = (props: ArchivesProps) => {
 
@@ -49,11 +59,12 @@ const Archives = (props: ArchivesProps) => {
   const post = useSelector<GlobalStoreType, PostStateType>(state => state.post);
   const comment = useSelector<GlobalStoreType, CommentStateType>(state => state.comment);
 
+  const [form] = Form.useForm();
+
   const dispatch = useDispatch();
-  const postId = props.computedMatch.params.id;
+  const postId = props.match.params.id;
   const postDetail: PostType = post.detail[postId];
   const randomPostsList: PostType[] = post.randomPostsList[postId] || [];
-  const { getFieldDecorator } = props.form;
 
   /**
    * 获取文章数据
@@ -101,7 +112,7 @@ const Archives = (props: ArchivesProps) => {
    * 清空评论状态
    */
   useEffect(() => {
-    props.form.resetFields();
+    form.resetFields();
     handleReply();
   }, [comment.total]);
 
@@ -148,34 +159,30 @@ const Archives = (props: ArchivesProps) => {
   /**
    * 评论提交事件
    */
-  const handleSubmit = () => {
-    props.form.validateFields((errors: unknown) => {
-      if (errors) {
-        return;
-      }
-      // @ts-ignore
-      let captcha = new TencentCaptcha('2090829333', (res: any) => {
-        if (res.ret === 0) {
-          let data = props.form.getFieldsValue();
-          data = { ...data, comment_post: postDetail._id };
-          if (comment.replyTo !== null) {
-            data = { ...data, comment_parent: comment.replyTo._id };
-          }
-          console.log('handleSubmit', data);
-          dispatch({
-            type: 'comment/create',
-            payload: {
-              ...data,
-              captcha: {
-                ticket: res.ticket,
-                randstr: res.randstr,
-              },
-            },
-          });
+  const onFinish = (result: any) => {
+    console.log('result', result)
+    // @ts-ignore
+    let captcha = new TencentCaptcha('2090829333', (res: any) => {
+      if (res.ret === 0) {
+        let data = {...result};
+        data = { ...data, comment_post: postDetail._id };
+        if (comment.replyTo !== null) {
+          data = { ...data, comment_parent: comment.replyTo._id };
         }
-      });
-      captcha && captcha.show();
+        console.log('handleSubmit', data);
+        dispatch({
+          type: 'comment/create',
+          payload: {
+            ...data,
+            captcha: {
+              ticket: res.ticket,
+              randstr: res.randstr,
+            },
+          },
+        });
+      }
     });
+    captcha && captcha.show();
   };
 
   /**
@@ -230,7 +237,7 @@ const Archives = (props: ArchivesProps) => {
     <Spin spinning={post.loading}>
       <div className="container">
         {
-          postDetail ?
+          postDetail ? (
             <>
               <Helmet>
                 <title>{`${postDetail.post_title || postDetail.quote_content}_${setting.site_name}`}</title>
@@ -249,15 +256,15 @@ const Archives = (props: ArchivesProps) => {
                   {postDetail.post_type === 3 && `“${postDetail.quote_content}” —— ${postDetail.quote_author}`}
                 </h1>
                 <ul className={styles["detail__info"]}>
-                  <li className={styles["detail__info-item"]}><Icon type="user" />&nbsp;
+                  <li className={styles["detail__info-item"]}><UserOutlined />&nbsp;
                     <Link to={`/authors/${postDetail.post_author.user_name}`} className="link-light">{postDetail.post_author.user_name}</Link>
                   </li>
-                  <li className={styles["detail__info-item"]}><Icon type="folder-open" />&nbsp;
+                  <li className={styles["detail__info-item"]}><FolderOpenOutlined />&nbsp;
                     <Link to={Helper.getFullCategoryPathById(postDetail.post_category._id, menu)} className="link-light">{postDetail.post_category.category_title}</Link>
                   </li>
-                  <li className={styles["detail__info-item"]}><Icon type="clock-circle" />&nbsp;{moment(postDetail.created_at).format('YYYY-MM-DD')}</li>
-                  <li className={styles["detail__info-item"]}><Icon type="message" />&nbsp;{comment.total} Comments</li>
-                  <li className={styles["detail__info-item"]}><Icon type="eye" />&nbsp;{postDetail.post_views}&nbsp;Views</li>
+                  <li className={styles["detail__info-item"]}><ClockCircleOutlined />&nbsp;{moment(postDetail.created_at).format('YYYY-MM-DD')}</li>
+                  <li className={styles["detail__info-item"]}><MessageOutlined />&nbsp;{comment.total} Comments</li>
+                  <li className={styles["detail__info-item"]}><EyeOutlined />&nbsp;{postDetail.post_views}&nbsp;Views</li>
                 </ul>
                 {postDetail.post_type !== 3 && (
                   <>
@@ -269,29 +276,32 @@ const Archives = (props: ArchivesProps) => {
                       dangerouslySetInnerHTML={{__html: postDetail.post_content || ''}}
                     />
                     <ul className={styles["detail__extra"]}>
-                      {postDetail.post_type === 2 &&
+                      {postDetail.post_type === 2 && (
                         <li className={styles["detail__extra-item"]}>
-                          <Icon type="camera" />
+                          <VideoCameraOutlined />
                           &nbsp;
                           {moment(postDetail.gallery_time).format('YYYY-MM-DD')}
                           &nbsp;
                           拍摄于
                           &nbsp;
                           {postDetail.gallery_location}
-                        </li>}
-                      {postDetail.post_type === 1 &&
+                        </li>
+                      )}
+                      {postDetail.post_type === 1 && (
                         <li className={styles["detail__extra-item"]}>
-                          <Icon type="calendar" />
+                          <CalendarOutlined />
                           &nbsp;
                           上映时间：
                           {moment(postDetail.movie_time).format('YYYY-MM-DD')}
-                        </li>}
-                      {(postDetail.post_type === 1 || postDetail.post_type === 2) &&
+                        </li>
+                      )}
+                      {(postDetail.post_type === 1 || postDetail.post_type === 2) && (
                         <li className={styles["detail__extra-item"]}>
-                          <Icon type="tag" />
+                          <TagOutlined />
                           &nbsp;
                           <Tags {...postDetail}/>
-                        </li>}
+                        </li>
+                      )}
                     </ul>
                   </>
                 )}
@@ -350,42 +360,42 @@ const Archives = (props: ArchivesProps) => {
                       </div>
                     )
                   }
-                  <Form>
-                    <FormItem>
-                      {getFieldDecorator('comment_author', {
-                        rules: [
-                          { required: true, message: '请输入称呼' },
-                          { max: 20, message: '字数不能大于20' }
-                        ],
-                      })(
-                        <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="称呼" />
-                      )}
+                  <Form
+                    form={form}
+                    onFinish={onFinish}
+                  >
+                    <FormItem
+                      name="comment_author"
+                      rules={[
+                        { required: true, message: '请输入称呼' },
+                        { max: 20, message: '字数不能大于20' }
+                      ]}
+                    >
+                      <Input prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="称呼" />
                     </FormItem>
-                    <FormItem>
-                      {getFieldDecorator('comment_email', {
-                        rules: [
-                          { required: true, message: '请输入邮箱' },
-                          { max: 30, message: '字数不能大于30' },
-                          { type: 'email', message: '邮箱格式不正确'}
-                        ],
-                      })(
-                        <Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="邮箱" />
-                      )}
+                    <FormItem
+                      name="comment_email"
+                      rules={[
+                        { required: true, message: '请输入邮箱' },
+                        { max: 30, message: '字数不能大于30' },
+                        { type: 'email', message: '邮箱格式不正确'}
+                      ]}
+                    >
+                      <Input prefix={<MailOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="邮箱" />
                     </FormItem>
-                    <FormItem>
-                      {getFieldDecorator('comment_content', {
-                        rules: [
-                          { required: true, message: '请输入内容' },
-                          { max: 200, message: '字数不能大于200' },
-                        ],
-                      })(
-                        <TextArea rows={4} placeholder="我坚信，评论可以一针见血"/>
-                      )}
+                    <FormItem
+                      name="comment_content"
+                      rules={[
+                        { required: true, message: '请输入内容' },
+                        { max: 200, message: '字数不能大于200' },
+                      ]}
+                    >
+                      <TextArea rows={4} placeholder="我坚信，评论可以一针见血"/>
                     </FormItem>
                     <FormItem>
                       <Button
                         type="primary"
-                        onClick={handleSubmit}
+                        htmlType="submit"
                       >
                         提交
                       </Button>
@@ -394,6 +404,7 @@ const Archives = (props: ArchivesProps) => {
                 </div>
               </div>
             </>
+            )
             :
             !post.loading ?
               <Empty description="没有找到文章"/>
@@ -404,5 +415,4 @@ const Archives = (props: ArchivesProps) => {
   )
 }
 
-// @ts-ignore
-export default withRouter(Form.create({})(Archives));
+export default Archives;

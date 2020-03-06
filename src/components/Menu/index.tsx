@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'umi/link';
+import { Link } from 'umi';
 import { withRouter } from 'react-router';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';

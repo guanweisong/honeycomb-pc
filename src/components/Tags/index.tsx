@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'umi/link';
+import { Link } from 'umi';
 import { TagType } from '@/types/tag';
 import { PostType} from '@/types/post';
 
