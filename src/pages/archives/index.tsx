@@ -11,7 +11,6 @@ import {
   CalendarOutlined,
   MailOutlined,
 } from '@ant-design/icons';
-import { FormComponentProps } from 'antd/lib/form/Form.d';
 import classNames from 'classnames';
 import moment from 'moment';
 import $ from 'jquery';
@@ -23,17 +22,17 @@ import { Link }  from 'umi';
 import Helper from '@/utils/helper';
 import Mapping from '@/utils/mapping.tsx';
 import { match } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
-import { SettingStateType } from '@/models/setting';
-import { PostStateType } from '@/models/post';
-import { MenuStateType } from '@/models/menu';
-import { CommentStateType, ReplyToType } from '@/models/comment';
-import { CommentType } from '@/types/comment';
-import { GlobalStoreType } from '@/types/globalStore';
-import { AnyAction, Dispatch } from 'redux';
+import useSettingModel from '@/models/setting';
+import useMenuModel from '@/models/menu';
+import usePostModel from '@/models/post';
+import useComment from '@/models/comment';
+import CommentDTO from '@/types/CommentDTO';
+import MenuDTO from '@/types/MenuDTO';
+import SettingDTO from '@/types/SettingDTO';
+import PostDTO from '@/types/PostDTO';
+
 require('fancybox')($);
 import H from 'history';
-import { PostType } from '@/types/post';
 
 interface Location extends H.Location {
   query: {[key: string]: string};
@@ -46,25 +45,26 @@ interface PathParams {
   id: string;
 }
 
-interface ArchivesProps extends FormComponentProps {
-  dispatch: Dispatch<AnyAction>;
+interface ArchivesProps {
   match: match<PathParams>;
   location: Location;
 }
 
 const Archives = (props: ArchivesProps) => {
 
-  const { setting } = useSelector<GlobalStoreType, SettingStateType>(state => state.setting);
-  const { menu } = useSelector<GlobalStoreType, MenuStateType>(state => state.menu);
-  const post = useSelector<GlobalStoreType, PostStateType>(state => state.post);
-  const comment = useSelector<GlobalStoreType, CommentStateType>(state => state.comment);
+  const settingModel = useSettingModel();
+  const menuModel = useMenuModel();
+  const postModel = usePostModel();
+  const commentModel = useComment();
+
+  const setting: SettingDTO = settingModel.setting;
+  const menu: MenuDTO[] = menuModel.menu;
 
   const [form] = Form.useForm();
 
-  const dispatch = useDispatch();
   const postId = props.match.params.id;
-  const postDetail: PostType = post.detail[postId];
-  const randomPostsList: PostType[] = post.randomPostsList[postId] || [];
+  const postDetail: PostDTO = postModel.detail[postId];
+  const randomPostsList: PostDTO[] = postModel.randomPostsList[postId] || [];
 
   /**
    * 获取文章数据
@@ -79,15 +79,12 @@ const Archives = (props: ArchivesProps) => {
    * 获取随机文章数据
    */
   useEffect(() => {
-    if (!randomPostsList && postDetail) {
-      dispatch({
-        type: 'post/indexRandomPostByCategoryId',
-        payload: {
-          post_category: postDetail.post_category._id,
-          post_id: postId,
-          number: 10,
-        },
-      });
+    if (postDetail) {
+      postModel.indexRandomPostByCategoryId({
+        post_category: postDetail.post_category._id,
+        post_id: postId,
+        number: 10,
+      })
     }
   }, [postDetail]);
 
@@ -100,10 +97,7 @@ const Archives = (props: ArchivesProps) => {
       if (thisCategory) {
         const parentCategory = menu.filter(item => item._id === thisCategory.category_parent);
         const categoryPath = parentCategory.length > 0 ? [parentCategory[0].category_title_en, thisCategory.category_title_en] : [thisCategory.category_title_en];
-        dispatch({
-          type: 'menu/setCurrentCategoryPath',
-          payload: categoryPath,
-        });
+        menuModel.setCurrentCategoryPath(categoryPath);
       }
     }
   }, [postDetail]);
@@ -113,8 +107,8 @@ const Archives = (props: ArchivesProps) => {
    */
   useEffect(() => {
     form.resetFields();
-    handleReply();
-  }, [comment.total]);
+    handleReply(null);
+  }, [commentModel.total]);
 
   /**
    * 绑定文章详情页图片相册共嗯
@@ -126,34 +120,25 @@ const Archives = (props: ArchivesProps) => {
       });
       $('.markdown-body [rel=gallery]').fancybox();
     }
-  }, [post.detail]);
+  }, [postModel.detail]);
 
   /**
    * 获取文章详情与评论的函数
    */
   const getData = () => {
-    dispatch({
-      type: 'post/indexPostDetail',
-      payload: postId,
-    });
-    dispatch({
-      type: 'comment/index',
-      payload: postId,
-    });
+    postModel.indexPostDetail(postId);
+    commentModel.index(postId);
   };
 
   /**
    * 评论回复事件
    * @param item
    */
-  const handleReply = (item?: ReplyToType) => {
+  const handleReply = (item) => {
     if (item !== null) {
       window.scrollTo(0 ,99999);
     }
-    dispatch({
-      type: 'comment/setReplyTo',
-      payload: item || null,
-    });
+    commentModel.setReplyTo(item || null);
   };
 
   /**
@@ -166,20 +151,17 @@ const Archives = (props: ArchivesProps) => {
       if (res.ret === 0) {
         let data = {...result};
         data = { ...data, comment_post: postDetail._id };
-        if (comment.replyTo !== null) {
-          data = { ...data, comment_parent: comment.replyTo._id };
+        if (commentModel.replyTo !== null) {
+          data = { ...data, comment_parent: commentModel.replyTo._id };
         }
         console.log('handleSubmit', data);
-        dispatch({
-          type: 'comment/create',
-          payload: {
-            ...data,
-            captcha: {
-              ticket: res.ticket,
-              randstr: res.randstr,
-            },
+        commentModel.create({
+          ...data,
+          captcha: {
+            ticket: res.ticket,
+            randstr: res.randstr,
           },
-        });
+        })
       }
     });
     captcha && captcha.show();
@@ -189,7 +171,7 @@ const Archives = (props: ArchivesProps) => {
    * 评论列表渲染
    * @param data
    */
-  const renderCommentList = (data: CommentType[]) => {
+  const renderCommentList = (data: CommentDTO[]) => {
     return data.map(item => {
       return (
         <li className={styles["detail__comment-item"]} key={item._id}>
@@ -234,7 +216,7 @@ const Archives = (props: ArchivesProps) => {
   };
 
   return (
-    <Spin spinning={post.loading}>
+    <Spin spinning={postModel.loading}>
       <div className="container">
         {
           postDetail ? (
@@ -263,7 +245,7 @@ const Archives = (props: ArchivesProps) => {
                     <Link to={Helper.getFullCategoryPathById(postDetail.post_category._id, menu)} className="link-light">{postDetail.post_category.category_title}</Link>
                   </li>
                   <li className={styles["detail__info-item"]}><ClockCircleOutlined />&nbsp;{moment(postDetail.created_at).format('YYYY-MM-DD')}</li>
-                  <li className={styles["detail__info-item"]}><MessageOutlined />&nbsp;{comment.total} Comments</li>
+                  <li className={styles["detail__info-item"]}><MessageOutlined />&nbsp;{commentModel.total} Comments</li>
                   <li className={styles["detail__info-item"]}><EyeOutlined />&nbsp;{postDetail.post_views}&nbsp;Views</li>
                 </ul>
                 {postDetail.post_type !== 3 && (
@@ -333,12 +315,12 @@ const Archives = (props: ArchivesProps) => {
                 })}
               >
                 {
-                  comment.total !== 0 && (
+                  commentModel.total !== 0 && (
                     <>
-                      <div className={styles["block__title"]}>{comment.total} Comments</div>
+                      <div className={styles["block__title"]}>{commentModel.total} Comments</div>
                       <div className={styles["block__content"]}>
                         <ul className={styles["detail__comment-list"]}>
-                          {renderCommentList(comment.list)}
+                          {renderCommentList(commentModel.list)}
                         </ul>
                       </div>
                     </>
@@ -347,13 +329,13 @@ const Archives = (props: ArchivesProps) => {
                 <div className={styles["block__title"]}>Leave A Comment</div>
                 <div className={styles["block__content"]}>
                   {
-                    comment.replyTo !== null && (
+                    commentModel.replyTo !== null && (
                       <div className={styles["detail__comment-reply"]}>
                         <span className={styles["detail__comment-reply-label"]}>Reply to:</span>
-                        <span className={styles["detail__comment-reply-name"]}>{comment.replyTo.comment_author}</span>
+                        <span className={styles["detail__comment-reply-name"]}>{commentModel.replyTo.comment_author}</span>
                         <span
                           className={styles["detail__comment-reply-cancel"]}
-                          onClick={() => handleReply()}
+                          onClick={() => handleReply(null)}
                         >
                           [取消]
                         </span>
@@ -406,7 +388,7 @@ const Archives = (props: ArchivesProps) => {
             </>
             )
             :
-            !post.loading ?
+            !postModel.loading ?
               <Empty description="没有找到文章"/>
               : null
         }

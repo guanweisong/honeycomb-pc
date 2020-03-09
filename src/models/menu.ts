@@ -1,55 +1,31 @@
-import * as menuService from '@/services/menu';
-import { MenuType } from '@/types/menu';
-import { Reducer } from 'redux';
-import { Effect } from 'dva';
+import MenuResquest from '@/resquests/MenuResquest';
+import { createModel } from "hox";
+import { useState } from 'react';
+import { plainToClass } from "class-transformer";
+import MenuResponse from '@/responses/MenuResponse';
 
+function UseMenu() {
+  const [menu, setMenu] = useState([]);
+  const [currentCategoryPath, setCurrentCategoryPath] = useState([]);
 
-export interface MenuStateType {
-  menu: MenuType [];
-  currentCategoryPath: [];
+  /**
+   * 查询分类菜单信息
+   */
+  const indexMenu = async () => {
+    const result =  await MenuResquest.indexMenu();
+    const response = plainToClass(MenuResponse, result);
+    console.log('indexMenu', response);
+    if (response.isSuccess()) {
+      setMenu(response.data.son);
+    }
+  }
+
+  return {
+    menu,
+    indexMenu,
+    currentCategoryPath,
+    setCurrentCategoryPath,
+  }
 }
 
-
-export interface MenuModelType {
-  namespace: string;
-  state: MenuStateType;
-  effects: {
-    indexMenu: Effect;
-  };
-  reducers: {
-    setMenu: Reducer<MenuStateType>;
-    setCurrentCategoryPath: Reducer<MenuStateType>;
-  };
-}
-
-const Model: MenuModelType = {
-  namespace: 'menu',
-  state: {
-    menu: [],
-    currentCategoryPath: [],
-  },
-  effects: {
-    * indexMenu({}, { call, put }) {
-      console.log('app=>model=>indexMenu');
-      const result = yield call(menuService.indexMenu);
-      if (result.status === 200) {
-        yield put({
-          type: 'setMenu',
-          payload: result.data.son,
-        });
-      }
-    },
-  },
-  reducers: {
-    // @ts-ignore
-    setMenu(state, { payload: values }) {
-      return { ...state, menu: values };
-    },
-    // @ts-ignore
-    setCurrentCategoryPath(state, { payload: values }) {
-      return { ...state, currentCategoryPath: values };
-    },
-  },
-}
-
-export default Model;
+export default createModel(UseMenu);

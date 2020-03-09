@@ -1,117 +1,72 @@
-import { Effect } from 'dva';
-import { Reducer } from 'redux';
-import { PostType } from '@/types/post';
+import PostResquest, { IndexPostListParamsType, IndexRandomPostListParamsType } from '@/resquests/PostResquest';
+import { createModel } from "hox";
+import { useState } from 'react';
+import { plainToClass } from "class-transformer";
+import ListResponse from '@/responses/post/ListResponse';
+import DetailResponse from '@/responses/post/DetailResponse';
+import RadomResponse from '@/responses/post/RadomResponse';
 
-import * as postsService from '@/services/post';
+function UsePost() {
+  const [list, setList] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [detail, setDetail] = useState({});
+  const [randomPostsList, setRandomPostsList] = useState({});
 
-export interface PostStateType {
-  list: PostType [];
-  total: number;
-  loading: boolean;
-  detail: {
-    string?: PostType,
-  };
-  randomPostsList: {
-    string?: PostType,
-  };
+  /**
+   * 查询文章列表
+   * @param values
+   */
+  const indexPostList = async (values: IndexPostListParamsType) => {
+    setLoading(true);
+    const result = await PostResquest.indexPostList(values);
+    const response = plainToClass(ListResponse, result);
+    console.log('indexPostList', response);
+    if (response.isSuccess()) {
+      setList(response.data.list);
+      setTotal(response.data.total);
+    }
+    setLoading(false);
+  }
+
+  /**
+   * 查询文章详情
+   * @param postId
+   */
+  const indexPostDetail = async (postId: string) => {
+    setLoading(true);
+    const result = await PostResquest.indexPostDetail(postId);
+    const response = plainToClass(DetailResponse, result);
+    console.log('indexPostDetail', response);
+    if (response.isSuccess()) {
+      setDetail({...detail, [response.data._id]: response.data})
+    }
+    setLoading(false);
+  }
+
+  /**
+   * 查询相关随机文章列表
+   * @param values
+   */
+  const indexRandomPostByCategoryId = async (values: IndexRandomPostListParamsType) => {
+    const result = await PostResquest.indexRandomPostByCategoryId(values);
+    const response = plainToClass(RadomResponse, result);
+    console.log('indexRandomPostByCategoryId', response);
+    if (response.isSuccess()) {
+      setRandomPostsList({...randomPostsList, [values.post_id]: response.data});
+    }
+  }
+
+  return {
+    list,
+    total,
+    loading,
+    detail,
+    randomPostsList,
+    indexPostList,
+    indexPostDetail,
+    indexRandomPostByCategoryId,
+  }
 }
 
-export interface PostModelType {
-  namespace: string;
-  state: PostStateType;
-  effects: {
-    indexPostList: Effect;
-    indexPostDetail: Effect;
-    indexRandomPostByCategoryId: Effect;
-  };
-  reducers: {
-    saveListData: Reducer<PostStateType>;
-    saveDetailData: Reducer<PostStateType>;
-    saveRandomPostsListData: Reducer<PostStateType>;
-    switchLoading: Reducer<PostStateType>;
-  };
-}
-
-const Model: PostModelType = {
-  namespace: 'post',
-  state: {
-    list: [],
-    total: 0,
-    loading: true,
-    detail: {},
-    randomPostsList: {},
-  },
-  effects: {
-    * indexPostList({ payload }, { call, put }) {
-      console.log('category=>model=>indexPostList');
-      yield put({
-        type: 'switchLoading',
-        payload: true,
-      });
-      const result = yield call(postsService.indexPostList, payload);
-      if (result.status === 200 ) {
-        yield put({
-          type: 'saveListData',
-          payload: {
-            list: result.data.list,
-            total: result.data.total,
-          },
-        });
-      }
-      yield put({
-        type: 'switchLoading',
-        payload: false,
-      });
-    },
-    * indexPostDetail({ payload }, { call, put }) {
-      console.log('category=>model=>indexPostDtail');
-      yield put({
-        type: 'switchLoading',
-        payload: true,
-      });
-      const result = yield call(postsService.indexPostDetail, payload);
-      const post = result.data;
-      yield put({
-        type: 'saveDetailData',
-        payload: post,
-      });
-      yield put({
-        type: 'switchLoading',
-        payload: false,
-      });
-    },
-    * indexRandomPostByCategoryId({ payload }, { call, put })  {
-      console.log('category=>model=>indexRandomPostByCategoryId');
-      const result = yield call(postsService.indexRandomPostByCategoryId, payload);
-      yield put({
-        type: 'saveRandomPostsListData',
-        payload: {
-          value: result.data,
-          id: payload.post_id,
-        },
-      });
-    },
-  },
-  reducers: {
-    // @ts-ignore
-    saveListData(state, { payload: { list, total } }) {
-      return { ...state, list, total };
-    },
-    // @ts-ignore
-    saveDetailData(state, { payload: value }) {
-      // @ts-ignore
-      return { ...state, detail: {...state.detail, [value._id]: value} };
-    },
-    // @ts-ignore
-    saveRandomPostsListData(state, { payload: {value, id} }) {
-      // @ts-ignore
-      return { ...state, randomPostsList: {...state.randomPostsList, [id]: value} };
-    },
-    // @ts-ignore
-    switchLoading(state, { payload: value }) {
-      return { ...state, loading: value };
-    },
-  },
-};
-
-export default Model;
+export default createModel(UsePost);

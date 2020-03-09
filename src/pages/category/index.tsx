@@ -3,17 +3,16 @@ import { Pagination, Spin, Empty } from 'antd';
 // @ts-ignore
 import { history } from 'umi';
 import { Helmet } from "react-helmet";
-import { useSelector, useDispatch } from 'react-redux';
-import { Dispatch, AnyAction } from 'redux';
 import { match } from "react-router";
 import PostListItem from '@/components/PostListItem';
-import { IndexPostListParamsType } from '@/services/post';
-import { SettingStateType } from '@/models/setting';
-import { PostStateType } from '@/models/post';
-import { MenuStateType } from '@/models/menu';
-import { GlobalStoreType } from '@/types/globalStore';
+import { IndexPostListParamsType } from '@/resquests/PostResquest';
+import useSettingModel from '@/models/setting';
+import useMenuModel from '@/models/menu';
+import usePostModel from '@/models/post';
 import styles from './index.less';
 import H from 'history';
+import MenuDTo from '@/types/MenuDTO';
+import SettingDTO from '@/types/SettingDTO';
 
 interface Location extends H.Location {
   query: {[key: string]: string};
@@ -25,17 +24,19 @@ interface PathParams {
 }
 
 interface CategoryProps {
-  dispatch: Dispatch<AnyAction>;
   match: match<PathParams>;
   location: Location;
 }
 
 const Category = (props: CategoryProps) => {
 
-  const { setting } = useSelector<GlobalStoreType, SettingStateType>(state => state.setting);
-  const { menu, currentCategoryPath } = useSelector<GlobalStoreType, MenuStateType>(state => state.menu);
-  const post = useSelector<GlobalStoreType, PostStateType>(state => state.post);
-  const dispatch = useDispatch();
+  const settingModel = useSettingModel();
+  const menuModel = useMenuModel();
+  const postModel = usePostModel();
+
+  const setting: SettingDTO = settingModel.setting;
+  const menu: MenuDTo[] = menuModel.menu;
+  const { currentCategoryPath, setCurrentCategoryPath } = menuModel;
 
   /**
    * 获取数据
@@ -60,18 +61,13 @@ const Category = (props: CategoryProps) => {
     if (idEn) {
       condition.category_id = menu.find(item => item.category_title_en === idEn)?._id;
     }
-    dispatch({
-      type: 'post/indexPostList',
-      payload: {...condition, post_status: [0], ...query},
-    });
+    postModel.indexPostList({...condition, post_status: [0], ...query});
     // 设置菜单高亮
     const path = [];
     params.firstCategory && path.push(params.firstCategory);
     params.secondCategory && path.push(params.secondCategory);
-    dispatch({
-      type: 'menu/setCurrentCategoryPath',
-      payload: path,
-    })
+
+    setCurrentCategoryPath(path)
   };
 
   /**
@@ -90,7 +86,6 @@ const Category = (props: CategoryProps) => {
    * 获取title文案
    */
   const getTitle = () => {
-    console.log('getTitle', props);
     const user_name = props.match.params.user_name;
     const tag_name = props.match.params.tag_name;
     if (user_name) {
@@ -105,7 +100,7 @@ const Category = (props: CategoryProps) => {
   const currentMenu = menu.find(item => item.category_title_en === currentCategoryPath[currentCategoryPath.length - 1]);
 
   return (
-    <Spin spinning={post.loading}>
+    <Spin spinning={postModel.loading}>
       <div className="container">
         <Helmet>
           {currentMenu && <title>{`${currentMenu.category_title}_${setting.site_name}`}</title>}
@@ -114,13 +109,13 @@ const Category = (props: CategoryProps) => {
         </Helmet>
         {getTitle() !== '' && <div className={styles.title}>{getTitle()}</div>}
         {
-          post.list.length > 0 ? (
+          postModel.list.length > 0 ? (
             <>
-              <PostListItem list={post.list}/>
+              <PostListItem list={postModel.list}/>
               <div className={styles.pagination}>
                 <Pagination
                   defaultCurrent={parseInt(props.location.query.page, 10) || 1}
-                  total={post.total}
+                  total={postModel.total}
                   pageSize={parseInt(props.location.query.limit, 10) || 10}
                   onChange={(page, pageSize) => onPaginationChange(page, pageSize)}
                 />
@@ -128,7 +123,7 @@ const Category = (props: CategoryProps) => {
             </>
             )
             :
-            !post.loading ?
+            !postModel.loading ?
               <Empty description="没有找到文章"/>
               :
               null

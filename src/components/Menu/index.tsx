@@ -1,28 +1,26 @@
 import React from 'react';
 import { Link } from 'umi';
-import { withRouter } from 'react-router';
-import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 // @ts-ignore
 import listToTree from 'list-to-tree-lite';
 import styles from './index.less';
-import { MenuStateType } from '@/models/menu';
-import { MenuType } from '@/types/menu';
-import { GlobalStoreType } from '@/types/globalStore';
-import { AnyAction, Dispatch } from 'redux';
 import H from 'history';
+import useMenuModel from "@/models/menu";
+import { withRouter } from "umi";
+import MenuDTO from "@/types/MenuDTO";
 
 interface Location extends H.Location {
   query?: {[key: string]: string};
 }
 
 interface MenuProps {
-  dispatch?: Dispatch<AnyAction>;
   location: Location;
 }
 
 const Menu = (props: MenuProps) => {
-  const { menu, currentCategoryPath } = useSelector<GlobalStoreType, MenuStateType>(state => state.menu);
+
+  const menuModel = useMenuModel();
+  const { menu, currentCategoryPath } = menuModel;
 
   const formatCategorise = () => {
     const menuData = listToTree(menu, {idKey: '_id', parentKey: 'category_parent'});
@@ -37,7 +35,7 @@ const Menu = (props: MenuProps) => {
     return [...result, ...menuData];
   };
 
-  const renderFirstLevel = (firstLevel: MenuType) => {
+  const renderFirstLevel = (firstLevel: MenuDTO) => {
     return (
       <li
         className={classNames({
@@ -63,7 +61,7 @@ const Menu = (props: MenuProps) => {
     )
   }
 
-  const renderSecondLevel = (firstLevel: MenuType, secondLevel: MenuType) => {
+  const renderSecondLevel = (firstLevel: MenuDTO, secondLevel: MenuDTO) => {
     return (
       <li
         className={classNames({

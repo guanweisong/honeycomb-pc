@@ -1,15 +1,14 @@
 import React, { useEffect, ReactNode } from 'react';
 import { Link } from 'umi';
 import moment from 'moment';
-import classnames from 'classnames';
+import classNames from 'classnames';
 import Menu from '@/components/Menu';
-import { withRouter } from "react-router";
 import { BackTop } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
 import styles from './index.less';
 import H from 'history';
-import { GlobalStoreType } from '@/types/globalStore';
-import { SettingStateType } from '@/models/setting';
+import useSettingModel from "@/models/setting";
+import useMenuModel from "@/models/menu";
+import SettingDTO from "@/types/SettingDTO";
 
 interface Location extends H.Location {
   query: {[key: string]: string};
@@ -21,27 +20,22 @@ interface IProps {
 }
 
 const BasicLayout = (props: IProps) => {
-  const { setting } = useSelector<GlobalStoreType, SettingStateType>(state => state.setting);
-  const dispatch = useDispatch();
+  const settingModel = useSettingModel();
+  const menuModel = useMenuModel();
+
+  const setting: SettingDTO = settingModel.setting;
 
   useEffect(()=> {
-    dispatch({
-      type: 'setting/indexSetting',
-      payload: {},
-    });
-    dispatch({
-      type: 'menu/indexMenu',
-      payload: {},
-    })
+    settingModel.indexSetting();
+    menuModel.indexMenu();
   }, []);
 
   useEffect(()=> {
     window.scrollTo(0, 0);
   }, [props.location]);
-
   return (
     <div
-      className={classnames({
+      className={classNames({
         [styles.layout]: true,
       })}
     >
@@ -63,5 +57,4 @@ const BasicLayout = (props: IProps) => {
   )
 }
 
-// @ts-ignore
-export default withRouter(BasicLayout);
+export default BasicLayout;

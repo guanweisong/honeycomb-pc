@@ -1,50 +1,28 @@
-import * as settingService from '@/services/setting';
-import { SettingType } from '@/types/setting';
-import { Reducer } from 'redux';
-import { Effect } from 'dva';
+import SettingResquest from '@/resquests/SettingResquest';
+import { createModel } from "hox";
+import { useState } from 'react';
+import { plainToClass } from "class-transformer";
+import SettingResponse from '@/responses/SettingResponse';
 
-export interface SettingStateType {
-  setting: SettingType;
+function UseSetting() {
+  const [setting, setSetting] = useState({});
+
+  /**
+   * 查询网站设置信息
+   */
+  const indexSetting = async () => {
+    const result = await SettingResquest.indexSetting();
+    const response = plainToClass(SettingResponse, result);
+    console.log('indexSetting', response);
+    if (response.isSuccess()) {
+      setSetting(response.data);
+    }
+  }
+
+  return {
+    setting,
+    indexSetting,
+  }
 }
 
-export interface SettingModelType {
-  namespace: string;
-  state: SettingStateType;
-  effects: {
-    indexSetting: Effect;
-  };
-  reducers: {
-    setSetting: Reducer<SettingStateType>;
-  };
-}
-
-const Model: SettingModelType = {
-  namespace: 'setting',
-  state: {
-    setting: {
-      _id: '',
-      site_name: '',
-      site_copyright: '',
-      site_signature: '',
-    },
-  },
-  effects: {
-    * indexSetting({}, { call, put }) {
-      console.log('app=>model=>indexSetting');
-      const result = yield call(settingService.indexSetting);
-      if (result.status === 200 ) {
-        yield put({
-          type: 'setSetting',
-          payload: result.data,
-        });
-      }
-    },
-  },
-  reducers: {
-    setSetting(state, { payload: values }) {
-      return { ...state, setting: values };
-    },
-  },
-}
-
-export default Model;
+export default createModel(UseSetting);

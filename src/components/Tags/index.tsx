@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'umi';
-import { TagType } from '@/types/tag';
-import { PostType} from '@/types/post';
+import TagDTO from '@/types/TagDTO';
+import PostDTO from '@/types/PostDTO';
 
-const Tag = (props: PostType) => {
+const Tag = (props: PostDTO) => {
 
-  const getTags = (item: PostType) => {
+  const getTags = (item: PostDTO) => {
     const arr = [];
-    const result: TagType[] = [];
+    const result: TagDTO[] = [];
     if (item.post_type === 1) {
       arr.push(item.movie_director);
       arr.push(item.movie_actor);

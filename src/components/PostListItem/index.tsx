@@ -1,4 +1,4 @@
-import React, { } from 'react';
+import React from 'react';
 import { Link } from 'umi';
 import {
   UserOutlined,
@@ -12,23 +12,24 @@ import moment from 'moment';
 import classNames from 'classnames';
 import Tags from '@/components/Tags';
 import Helper from '@/utils/helper';
-import { useSelector } from 'react-redux';
 import Mapping from '@/utils/mapping.tsx';
 import styles from './index.less';
-import { GlobalStoreType } from '@/types/globalStore';
-import { MenuStateType } from '@/models/menu';
-import { PostType } from '@/types/post';
+import useMenuModel from '@/models/menu';
+import PostDTO from '@/types/PostDTO';
 
-interface PostListItemProps {
-  list: PostType [];
+interface IProps {
+  list: PostDTO[]; 
 }
 
-const PostListItem = (props: PostListItemProps) => {
+const PostListItem = (props: IProps) => {
 
-  const { menu } = useSelector<GlobalStoreType, MenuStateType>(state => state.menu);
+  const menuModel = useMenuModel();
+
+  const { menu } = menuModel;
+
   return (
     <>
-     {props.list.map(item =>
+     {props.list.map(item  =>
         <div
           className={classNames({
             [styles["post-list-item"]]: true,

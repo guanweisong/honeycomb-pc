@@ -4,9 +4,6 @@ import theme from './src/theme';
 
 // ref: https://umijs.org/config/
 const config: IConfig = {
-  dva: {
-    hmr: true,
-  },
   antd: {},
   dynamicImport: {
     loading: '@/components/Loader'
