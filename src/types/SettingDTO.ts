@@ -4,5 +4,7 @@ export default class SettingDTO {
   public site_subName: string;
   public site_copyright: string;
   public site_signature: string;
+  public site_record_no?: string;
+  public site_record_url?: string;
 }
-  
+

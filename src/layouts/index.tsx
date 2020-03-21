@@ -50,7 +50,19 @@ const BasicLayout = (props: IProps) => {
       </div>
       <div className={styles.footer}>
         <div>{setting.site_signature}</div>
-        <div>©{moment().format('YYYY')}&nbsp;{setting.site_copyright}</div>
+        <div>
+          ©{moment().format('YYYY')}&nbsp;{setting.site_copyright}
+          &nbsp;
+          {
+            setting.site_record_no ?
+              setting.site_record_url?
+                <a href={`${setting.site_record_url}`} target="_blank" rel="nofollow" className="link-light">{setting.site_record_no}</a>
+                :
+                setting.site_record_no
+              :
+              null
+          }
+        </div>
       </div>
       <BackTop />
     </div>
