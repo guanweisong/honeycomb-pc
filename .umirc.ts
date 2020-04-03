@@ -14,6 +14,7 @@ const config: IConfig = {
   },
   theme: theme,
   ignoreMomentLocale: true,
+  publicPath: 'https://cdn.guanweisong.com/',
   hash: true,
   routes: [
     {
