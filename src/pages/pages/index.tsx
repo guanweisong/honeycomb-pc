@@ -2,13 +2,9 @@ import React, { useEffect } from 'react'
 import { Spin, Empty, Input, Button, Form } from 'antd'
 import {
   UserOutlined,
-  FolderOpenOutlined,
-  TagOutlined,
   ClockCircleOutlined,
   MessageOutlined,
   EyeOutlined,
-  VideoCameraOutlined,
-  CalendarOutlined,
   MailOutlined,
 } from '@ant-design/icons'
 import classNames from 'classnames'
@@ -16,19 +12,14 @@ import moment from 'moment'
 import $ from 'jquery'
 import 'fancybox/dist/css/jquery.fancybox.css'
 import { Helmet } from 'react-helmet'
-import Tags from '@/components/Tags'
-import { Link } from 'umi'
-import Helper from '@/utils/helper'
-import Mapping from '@/utils/mapping.tsx'
 import { match } from 'react-router'
 import useSettingModel from '@/models/setting'
 import useMenuModel from '@/models/menu'
-import usePostModel from '@/models/post'
+import usePageModel from '@/models/page'
 import useComment from '@/models/comment'
 import CommentDTO from '@/types/CommentDTO'
 import MenuDTO from '@/types/MenuDTO'
-import SettingDTO from '@/types/SettingDTO'
-import PostDTO from '@/types/PostDTO'
+import PageDTO from '@/types/PageDTO'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import H from 'history'
 import styles from './index.less'
@@ -46,15 +37,15 @@ interface PathParams {
   id: string
 }
 
-interface ArchivesProps {
+interface PagesProps {
   match: match<PathParams>
   location: Location
 }
 
-const Archives = (props: ArchivesProps) => {
+const Pages = (props: PagesProps) => {
   const settingModel = useSettingModel()
   const menuModel = useMenuModel()
-  const postModel = usePostModel()
+  const pageModel = usePageModel()
   const commentModel = useComment()
 
   const { setting } = settingModel
@@ -62,80 +53,46 @@ const Archives = (props: ArchivesProps) => {
 
   const [form] = Form.useForm()
 
-  const postId = props.match.params.id
-  const postDetail: PostDTO = postModel.detail[postId]
-  const randomPostsList: PostDTO[] = postModel.randomPostsList[postId] || []
-
-  /**
-   * 获取文章数据
-   */
-  useEffect(() => {
-    if (menu.length > 0 && !postDetail) {
-      getData()
-    }
-  }, [props.location.pathname, menu])
-
-  /**
-   * 获取随机文章数据
-   */
-  useEffect(() => {
-    if (postDetail) {
-      postModel.indexRandomPostByCategoryId({
-        post_category: postDetail.post_category._id,
-        post_id: postId,
-        number: 10,
-      })
-    }
-  }, [postDetail])
-
-  /**
-   * 设置菜单高亮
-   */
-  useEffect(() => {
-    if (postDetail) {
-      const thisCategory: MenuDTO = menu.find(
-        (item: MenuDTO) => item._id === postDetail.post_category._id,
-      )
-      if (thisCategory) {
-        const parentCategory: MenuDTO[] = menu.filter(
-          (item: MenuDTO) => item._id === thisCategory.category_parent,
-        )
-        const menuPath =
-          parentCategory.length > 0
-            ? [parentCategory[0].category_title_en, thisCategory.category_title_en]
-            : [thisCategory.category_title_en]
-        menuModel.setCurrentMenuPath(menuPath)
-      }
-    }
-  }, [postDetail])
-
-  /**
-   * 清空评论状态
-   */
-  useEffect(() => {
-    form.resetFields()
-    handleReply(null)
-  }, [commentModel.total])
-
-  /**
-   * 绑定文章详情页图片相册共嗯
-   */
-  useEffect(() => {
-    if (postDetail) {
-      $('.markdown-body img').each((index, item) => {
-        $(item).wrap(`<a href=${$(item).attr('src')} rel='gallery'></a>`)
-      })
-      $('.markdown-body [rel=gallery]').fancybox()
-    }
-  }, [postModel.detail])
+  const pageId = props.match.params.id
+  const pageDetail: PageDTO = pageModel.detail[pageId]
 
   /**
    * 获取文章详情与评论的函数
    */
   const getData = () => {
-    postModel.indexPostDetail(postId)
-    commentModel.index(postId)
+    pageModel.indexPageDetail(pageId)
+    commentModel.index(pageId)
   }
+
+  /**
+   * 获取文章数据
+   */
+  useEffect(() => {
+    if (menu.length > 0 && !pageDetail) {
+      getData()
+    }
+  }, [props.location.pathname, menu])
+
+  /**
+   * 设置菜单高亮
+   */
+  useEffect(() => {
+    if (pageDetail) {
+      menuModel.setCurrentMenuPath([pageDetail._id])
+    }
+  }, [pageDetail])
+
+  /**
+   * 绑定文章详情页图片相册共嗯
+   */
+  useEffect(() => {
+    if (pageDetail) {
+      $('.markdown-body img').each((index, item) => {
+        $(item).wrap(`<a href=${$(item).attr('src')} rel='gallery'></a>`)
+      })
+      $('.markdown-body [rel=gallery]').fancybox()
+    }
+  }, [pageDetail])
 
   /**
    * 评论回复事件
@@ -149,6 +106,14 @@ const Archives = (props: ArchivesProps) => {
   }
 
   /**
+   * 清空评论状态
+   */
+  useEffect(() => {
+    form.resetFields()
+    handleReply(null)
+  }, [commentModel.total])
+
+  /**
    * 评论提交事件
    */
   const onFinish = (result: any) => {
@@ -157,7 +122,7 @@ const Archives = (props: ArchivesProps) => {
     const captcha = new TencentCaptcha('2090829333', (res: any) => {
       if (res.ret === 0) {
         let data = { ...result }
-        data = { ...data, comment_post: postDetail._id }
+        data = { ...data, comment_post: pageDetail._id }
         if (commentModel.replyTo !== null) {
           data = { ...data, comment_parent: commentModel.replyTo._id }
         }
@@ -184,7 +149,7 @@ const Archives = (props: ArchivesProps) => {
         <li className={styles['detail__comment-item']} key={item._id}>
           <div className={styles['detail__comment-wrap']}>
             <div className={styles['detail__comment-photo']}>
-              <img src={item.comment_avatar} />
+              <img alt="" src={item.comment_avatar} />
             </div>
             <div className={styles['detail__comment-content']}>
               <div className={styles['detail__comment-name']}>{item.comment_author}</div>
@@ -216,51 +181,23 @@ const Archives = (props: ArchivesProps) => {
   }
 
   return (
-    <Spin spinning={postModel.loading}>
+    <Spin spinning={pageModel.loading}>
       <div className="container">
-        {postDetail ? (
+        {pageDetail ? (
           <>
             <Helmet>
-              <title>{`${postDetail.post_title || postDetail.quote_content}_${
-                setting.site_name
-              }`}</title>
+              <title>{`${pageDetail.page_title}_${setting.site_name}`}</title>
             </Helmet>
             <div
               className={classNames({
                 [styles.detail__content]: true,
-                [styles[Mapping.postClass[postDetail.post_type]]]: true,
               })}
             >
-              <h1 className={styles.detail__title}>
-                {postDetail.post_type === 1 &&
-                  `${postDetail.post_title} ${postDetail.movie_name_en} (${moment(
-                    postDetail.movie_time,
-                  ).format('YYYY')})`}
-                {[0, 2].includes(postDetail.post_type) && postDetail.post_title}
-                {postDetail.post_type === 3 &&
-                  `“${postDetail.quote_content}” —— ${postDetail.quote_author}`}
-              </h1>
+              <h1 className={styles.detail__title}>{pageDetail.page_title}</h1>
               <ul className={styles.detail__info}>
                 <li className={styles['detail__info-item']}>
-                  <UserOutlined />
-                  &nbsp;
-                  <Link to={`/authors/${postDetail.post_author.user_name}`} className="link-light">
-                    {postDetail.post_author.user_name}
-                  </Link>
-                </li>
-                <li className={styles['detail__info-item']}>
-                  <FolderOpenOutlined />
-                  &nbsp;
-                  <Link
-                    to={Helper.getFullCategoryPathById(postDetail.post_category._id, menu)}
-                    className="link-light"
-                  >
-                    {postDetail.post_category.category_title}
-                  </Link>
-                </li>
-                <li className={styles['detail__info-item']}>
                   <ClockCircleOutlined />
-                  &nbsp;{moment(postDetail.created_at).format('YYYY-MM-DD')}
+                  &nbsp;{moment(pageDetail.created_at).format('YYYY-MM-DD')}
                 </li>
                 <li className={styles['detail__info-item']}>
                   <MessageOutlined />
@@ -268,64 +205,17 @@ const Archives = (props: ArchivesProps) => {
                 </li>
                 <li className={styles['detail__info-item']}>
                   <EyeOutlined />
-                  &nbsp;{postDetail.post_views}&nbsp;Views
+                  &nbsp;{pageDetail.page_views}&nbsp;Views
                 </li>
               </ul>
-              {postDetail.post_type !== 3 && (
-                <>
-                  <div
-                    className={classNames({
-                      [styles.detail__detail]: true,
-                      'markdown-body': true,
-                    })}
-                    dangerouslySetInnerHTML={{ __html: postDetail.post_content || '' }}
-                  />
-                  <ul className={styles.detail__extra}>
-                    {postDetail.post_type === 2 && (
-                      <li className={styles['detail__extra-item']}>
-                        <VideoCameraOutlined />
-                        &nbsp;
-                        {moment(postDetail.gallery_time).format('YYYY-MM-DD')}
-                        &nbsp; 拍摄于 &nbsp;
-                        {postDetail.gallery_location}
-                      </li>
-                    )}
-                    {postDetail.post_type === 1 && (
-                      <li className={styles['detail__extra-item']}>
-                        <CalendarOutlined />
-                        &nbsp; 上映时间：
-                        {moment(postDetail.movie_time).format('YYYY-MM-DD')}
-                      </li>
-                    )}
-                    {(postDetail.post_type === 1 || postDetail.post_type === 2) && (
-                      <li className={styles['detail__extra-item']}>
-                        <TagOutlined />
-                        &nbsp;
-                        <Tags {...postDetail} />
-                      </li>
-                    )}
-                  </ul>
-                </>
-              )}
+              <div
+                className={classNames({
+                  [styles.detail__detail]: true,
+                  'markdown-body': true,
+                })}
+                dangerouslySetInnerHTML={{ __html: pageDetail.page_content || '' }}
+              />
             </div>
-            {randomPostsList.length > 0 && (
-              <div className={styles.block}>
-                <div className={styles.block__title}>猜你喜欢</div>
-                <div className={styles.block__content}>
-                  <ul className={styles['detail__post-list']}>
-                    {randomPostsList.map((item) => {
-                      return (
-                        <li key={item._id}>
-                          <Link to={`/archives/${item._id}`}>
-                            {item.post_title || item.quote_content}
-                          </Link>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </div>
-              </div>
-            )}
             <div
               className={classNames({
                 [styles.detail__comment]: true,
@@ -402,7 +292,7 @@ const Archives = (props: ArchivesProps) => {
               </div>
             </div>
           </>
-        ) : !postModel.loading ? (
+        ) : !pageModel.loading ? (
           <Empty description="没有找到文章" />
         ) : null}
       </div>
@@ -410,4 +300,4 @@ const Archives = (props: ArchivesProps) => {
   )
 }
 
-export default Archives
+export default Pages

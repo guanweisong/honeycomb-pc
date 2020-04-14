@@ -6,21 +6,21 @@ export default class Helper {
    * @returns {string}
    */
   static getFullCategoryPathById(pid: string, arr: any) {
-    let temp = [];
-    let path = ['/category'];
+    let temp = []
+    let path = ['/category']
     let forFn = (arr, pid) => {
       for (let value of arr) {
-        let item = value;
+        let item = value
         if (item._id == pid) {
-          temp.push(item);
-          forFn(arr,item.category_parent);
+          temp.push(item)
+          forFn(arr, item.category_parent)
         }
       }
-    };
-    forFn(arr, pid);
+    }
+    forFn(arr, pid)
     temp.reverse().forEach((item) => {
-      path.push(item.category_title_en);
-    });
-    return path.join('/');
+      path.push(item.category_title_en)
+    })
+    return path.join('/')
   }
 }

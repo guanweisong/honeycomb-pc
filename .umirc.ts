@@ -1,12 +1,12 @@
 // @ts-ignore
-import { IConfig } from 'umi-types';
-import theme from './src/theme';
+import { IConfig } from 'umi-types'
+import theme from './src/theme'
 
 // ref: https://umijs.org/config/
 const config: IConfig = {
   antd: {},
   dynamicImport: {
-    loading: '@/components/Loader'
+    loading: '@/components/Loader',
   },
   title: '稻草人博客',
   analytics: {
@@ -41,9 +41,13 @@ const config: IConfig = {
           path: '/archives/:id',
           component: './archives',
         },
+        {
+          path: '/pages/:id',
+          component: './pages',
+        },
       ],
     },
   ],
-};
+}
 
-export default config;
+export default config

@@ -1,10 +1,10 @@
-import React, { } from 'react';
+import React from 'react'
 import {
   FileOutlined,
   VideoCameraOutlined,
   PictureOutlined,
   MessageOutlined,
-} from '@ant-design/icons';
+} from '@ant-design/icons'
 
 export default class Mapping {
   static postClass = {

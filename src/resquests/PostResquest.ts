@@ -1,27 +1,26 @@
-import request from '@/utils/request';
-
+import request from '@/utils/request'
 
 export interface IndexPostListParamsType {
-  category_id?: string;
-  post_status?: number [];
-  page?: number;
-  limit?: number;
-  tag_name?: string [];
-  user_name?: string;
-  firstCategory?: string;
-  secondCategory?: string;
+  category_id?: string
+  post_status?: number[]
+  page?: number
+  limit?: number
+  tag_name?: string[]
+  user_name?: string
+  firstCategory?: string
+  secondCategory?: string
 }
 
 export interface IndexRandomPostListParamsType {
-  number?: number;
-  post_category: string;
-  post_id: string;
+  number?: number
+  post_category: string
+  post_id: string
 }
 
 export default class PostRequest {
   /**
    * 查询文章列表
-   * @param params 
+   * @param params
    */
   public static indexPostList(params: IndexPostListParamsType) {
     return request({
@@ -33,7 +32,7 @@ export default class PostRequest {
 
   /**
    * 查询文章详情
-   * @param id 
+   * @param id
    */
   public static indexPostDetail(id: string) {
     return request({
@@ -44,7 +43,7 @@ export default class PostRequest {
 
   /**
    * 查询随机文章列表
-   * @param params 
+   * @param params
    */
   public static indexRandomPostByCategoryId(params: IndexRandomPostListParamsType) {
     return request({

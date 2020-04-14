@@ -1,6 +1,6 @@
-import React from 'react';
-import classNames from 'classnames';
-import styles from './index.less';
+import React from 'react'
+import classNames from 'classnames'
+import styles from './index.less'
 
 const Loader = () => {
   return (
@@ -17,4 +17,4 @@ const Loader = () => {
   )
 }
 
-export default Loader;
+export default Loader

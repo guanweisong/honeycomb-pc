@@ -1,4 +1,4 @@
-import request from '@/utils/request';
+import request from '@/utils/request'
 
 export default class MenuRequest {
   /**
@@ -6,7 +6,7 @@ export default class MenuRequest {
    */
   public static indexMenu() {
     return request({
-      url: '/categories',
+      url: '/menus',
       method: 'get',
     })
   }
