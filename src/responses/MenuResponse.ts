@@ -1,6 +1,6 @@
-import BaseResponse from './BaseResponse'
 import MenuDTO from '@/types/MenuDTO'
 import { Type } from 'class-transformer'
+import BaseResponse from './BaseResponse'
 
 export default class MenuResponse extends BaseResponse {
   @Type(() => MenuDTO)

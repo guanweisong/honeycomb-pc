@@ -6,11 +6,11 @@ export default class Helper {
    * @returns {string}
    */
   static getFullCategoryPathById(pid: string, arr: any) {
-    let temp = []
-    let path = ['/category']
-    let forFn = (arr, pid) => {
-      for (let value of arr) {
-        let item = value
+    const temp = []
+    const path = ['/category']
+    const forFn = (arr, pid) => {
+      for (const value of arr) {
+        const item = value
         if (item._id == pid) {
           temp.push(item)
           forFn(arr, item.category_parent)

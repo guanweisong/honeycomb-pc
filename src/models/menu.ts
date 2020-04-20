@@ -3,9 +3,10 @@ import { createModel } from 'hox'
 import { useState } from 'react'
 import { plainToClass } from 'class-transformer'
 import MenuResponse from '@/responses/MenuResponse'
+import MenuDTO from '@/types/MenuDTO'
 
 function UseMenu() {
-  const [menu, setMenu] = useState([])
+  const [menu, setMenu] = useState<MenuDTO[]>([])
   const [currentMenuPath, setCurrentMenuPath] = useState([])
 
   /**

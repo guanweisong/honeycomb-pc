@@ -5,9 +5,10 @@ import { useState } from 'react'
 import { plainToClass } from 'class-transformer'
 import CommentResponse from '@/responses/CommentResponse'
 import BaseResponse from '@/responses/BaseResponse'
+import CommentDTO from '@/types/CommentDTO'
 
 function UseComment() {
-  const [list, setList] = useState([])
+  const [list, setList] = useState<CommentDTO[]>([])
   const [total, setTotal] = useState(0)
   const [replyTo, setReplyTo] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -32,7 +33,7 @@ function UseComment() {
    * 创建新评论
    * @param values
    */
-  const create = async (values) => {
+  const create = async (values: any) => {
     const result = await CommentRequest.create(values)
     const response = plainToClass(BaseResponse, result)
     if (response.isSuccess()) {

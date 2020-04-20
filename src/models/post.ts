@@ -8,9 +8,10 @@ import { plainToClass } from 'class-transformer'
 import ListResponse from '@/responses/post/ListResponse'
 import DetailResponse from '@/responses/post/DetailResponse'
 import RadomResponse from '@/responses/post/RadomResponse'
+import PostDTO from '@/types/PostDTO'
 
 function UsePost() {
-  const [list, setList] = useState([])
+  const [list, setList] = useState<PostDTO[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
   const [detail, setDetail] = useState({})

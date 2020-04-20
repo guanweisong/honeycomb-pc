@@ -14,6 +14,7 @@
       "@/*": ["src/*"]
     },
     "allowSyntheticDefaultImports": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "strictPropertyInitialization": false
   }
 }
